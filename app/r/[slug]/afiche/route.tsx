@@ -18,6 +18,12 @@ import { capitalizar } from "@/lib/domain/texto";
  *   /r/[slug]/afiche?formato=historia → 1080×1920, para historias
  */
 
+/**
+ * Sin esto la respuesta se cachea ignorando la query, y `?formato=historia`
+ * devolvía el afiche de feed: los dos formatos salían idénticos.
+ */
+export const dynamic = "force-dynamic";
+
 const LISTAS: [number, string][] = [
   [6, "#C4183C"], [1, "#FFE600"], [2, "#2A3FA6"], [1, "#F6F4EF"],
   [4, "#0F8F70"], [1, "#FF2E93"], [3, "#E0A01A"], [1, "#131A33"],
