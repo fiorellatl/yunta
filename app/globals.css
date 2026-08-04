@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+@source "../app";
+@source "../components";
+
+/* ───────────────────────────────────────────────────────────
+   Yunta · sistema visual
+
+   Referencias: impreso popular peruano, papel, sellos, tintas
+   planas, numeración, señalética de mercado y tipografía de
+   imprenta. Lo andino entra por la estructura —proporción,
+   repetición, ritmo— nunca como ornamento.
+
+   Los colores salen de tintes naturales peruanos, reinterpretados
+   en digital: añil, cochinilla, chilca, tara.
+   ─────────────────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Tinta y papel */
+  --tinta: #131a33; /* negro de imprenta con fondo añil */
+  --tinta-70: #454d69;
+  --tinta-45: #7a819a;
+  --tinta-15: #d5d7e0;
+  --papel: #f6f4ef; /* papel de imprenta, no crema decorativo */
+  --papel-alto: #ffffff;
+
+  /* Tintes */
+  --anil: #2a3fa6; /* añil · acción, confianza */
+  --anil-oscuro: #1f2f7e;
+  --anil-suave: #e4e7f7;
+  --cochinilla: #c4183c; /* cochinilla · alerta, énfasis */
+  --cochinilla-suave: #fbe1e7;
+  --chilca: #0f8f70; /* chilca · vendido, logrado */
+  --chilca-suave: #d5f0e6;
+  --tara: #e0a01a; /* tara · reservado, atención */
+  --tara-suave: #fcefd2;
+
+  --radio: 14px;
+  --radio-sm: 8px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-tinta: var(--tinta);
+  --color-tinta-70: var(--tinta-70);
+  --color-tinta-45: var(--tinta-45);
+  --color-tinta-15: var(--tinta-15);
+  --color-papel: var(--papel);
+  --color-papel-alto: var(--papel-alto);
+  --color-anil: var(--anil);
+  --color-anil-oscuro: var(--anil-oscuro);
+  --color-anil-suave: var(--anil-suave);
+  --color-cochinilla: var(--cochinilla);
+  --color-cochinilla-suave: var(--cochinilla-suave);
+  --color-chilca: var(--chilca);
+  --color-chilca-suave: var(--chilca-suave);
+  --color-tara: var(--tara);
+  --color-tara-suave: var(--tara-suave);
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-tecnica), ui-monospace, monospace;
+
+  --radius-talon: var(--radio);
+  --radius-talon-sm: var(--radio-sm);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--papel);
+    color: var(--tinta);
+    font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2.5px solid var(--anil);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--tara);
+    color: var(--tinta);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* ── El talón troquelado ──
+     Borde perforado del impreso. Una sola vez por pantalla. */
+  .troquel {
+    position: relative;
+    background: var(--papel-alto);
+    border-radius: var(--radio) var(--radio) 0 0;
+  }
+
+  .troquel::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -9px;
+    height: 9px;
+    background:
+      radial-gradient(circle at 5px 0, transparent 0 4.5px, var(--papel-alto) 4.6px)
+      0 0 / 10px 9px repeat-x;
+    filter: drop-shadow(0 1px 0 var(--tinta-15));
+  }
+
+  /* ── Línea de corte ──
+     Perforación pareja, como la de un talonario de verdad. El ritmo
+     irregular se probó acá y a 1px se lee como defecto, no como
+     estructura: vive en .ritmo, donde tiene tamaño para leerse. */
+  .linea-corte {
+    height: 1px;
+    background-image: linear-gradient(
+      to right,
+      var(--tinta-15) 0 6px,
+      transparent 6px 12px
+    );
+    background-size: 12px 1px;
+  }
+
+  /* ── Ritmo ──
+     Módulos de distinta altura en una secuencia fija. Toma de los
+     tejidos la repetición y la proporción, no el dibujo. Se usa
+     como remate estructural, nunca como decoración de relleno. */
+  .ritmo {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 14px;
+  }
+
+  .ritmo > i {
+    display: block;
+    width: 3px;
+    background: currentColor;
+    border-radius: 1px;
+  }
+
+  .ritmo > i:nth-child(4n + 1) { height: 100%; }
+  .ritmo > i:nth-child(4n + 2) { height: 40%; }
+  .ritmo > i:nth-child(4n + 3) { height: 70%; }
+  .ritmo > i:nth-child(4n + 4) { height: 40%; }
+
+  /* Sello: etiqueta de estado en vocabulario de imprenta. */
+  .sello {
+    font-family: var(--font-tecnica), monospace;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1.5px solid currentColor;
+    border-radius: 5px;
+    padding: 0.2em 0.55em;
+  }
+}
+
+/* El único momento animado: el sello cayendo sobre el talón. */
+@keyframes caida-sello {
+  from {
+    opacity: 0;
+    transform: rotate(-9deg) scale(1.9);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-9deg) scale(1);
+  }
+}
+
+.animate-sello {
+  animation: caida-sello 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4) 0.7s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

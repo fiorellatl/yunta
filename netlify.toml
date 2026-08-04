@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# El plugin oficial adapta el App Router de Next a las funciones de Netlify:
+# sin él, las rutas dinámicas y los Server Actions no se despliegan.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
