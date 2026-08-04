@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PortadaCampana } from "@/components/create/portada-campana";
+import { DescargarAfiche } from "@/components/campaign/descargar-afiche";
 import { diasHasta, fechaLarga, money, moneyCorto } from "@/lib/format";
 
 /**
@@ -104,6 +105,11 @@ export function CampanaIniciada({
           {dias === 0 ? "hoy" : dias === 1 ? "mañana" : `en ${dias} días`}
         </p>
       </div>
+
+      {/* El afiche, antes de pedirle que comparta: es lo que va a mandar */}
+      <section className="mt-8 rounded-talon border-2 border-tinta-15 bg-papel-alto p-5">
+        <DescargarAfiche slug={slug} causa={causa} />
+      </section>
 
       {/* El verdadero primer paso */}
       <section className="mt-9">

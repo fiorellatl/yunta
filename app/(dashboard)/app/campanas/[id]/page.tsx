@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BarraMeta } from "@/components/campaign/barra-meta";
 import { GrillaLectura } from "@/components/campaign/grilla-lectura";
 import { BandejaOrdenes } from "@/components/admin/bandeja-ordenes";
+import { DescargarAfiche } from "@/components/campaign/descargar-afiche";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { campanaDelOrganizador } from "@/lib/data/campanas";
 import { diasHasta, fechaLarga, moneyCorto } from "@/lib/format";
@@ -116,6 +117,11 @@ export default async function PanelCampanaPage({
         <div className="mt-4">
           <GrillaLectura cantidad={campana.total_numbers} numeros={numeros} />
         </div>
+      </section>
+
+      {/* El afiche, siempre a mano para volver a compartir */}
+      <section className="mt-10 rounded-talon border-2 border-tinta-15 bg-papel-alto p-5">
+        <DescargarAfiche slug={campana.slug} causa={campana.goal_title} />
       </section>
 
       {/* El sorteo */}
