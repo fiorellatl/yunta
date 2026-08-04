@@ -38,15 +38,34 @@ const cifras = Archivo({
   display: "swap",
 });
 
+/**
+ * De dónde sale la URL absoluta de las imágenes de vista previa.
+ *
+ * Sin `metadataBase`, Next emite `http://localhost:3000` y WhatsApp no
+ * puede traer la imagen: el enlace se pega sin nada. Y una variable mal
+ * configurada apuntando a localhost rompe lo mismo en silencio, así que
+ * en producción se descarta y se cae a la URL que Netlify inyecta sola.
+ */
+function urlDelSitio() {
+  const candidatas = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.URL, // Netlify la define en cada build
+    "https://yuntaz.netlify.app",
+  ];
+
+  const enProduccion = process.env.NODE_ENV === "production";
+
+  for (const url of candidatas) {
+    if (!url) continue;
+    if (enProduccion && url.includes("localhost")) continue;
+    return url;
+  }
+
+  return "http://localhost:3007";
+}
+
 export const metadata: Metadata = {
-  /**
-   * Sin esto, Next emite la URL de la imagen de vista previa en forma
-   * relativa y WhatsApp, Instagram y Facebook no pueden resolverla:
-   * el enlace se pega sin imagen.
-   */
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://yuntaz.netlify.app",
-  ),
+  metadataBase: new URL(urlDelSitio()),
   title: "Yunta · Toda causa merece una oportunidad",
   description:
     "Crea tu campaña, compártela por WhatsApp y recauda con total transparencia. El dinero llega directo a tu Yape.",
