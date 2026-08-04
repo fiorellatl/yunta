@@ -172,23 +172,45 @@ export default function CrearCampanaPage() {
       })),
     );
 
-    const resultado = await publicarCampana({
-      causa: borrador.causa.trim(),
-      historia: borrador.historia,
-      meta: borrador.meta,
-      precio: borrador.precio,
-      cantidad: borrador.cantidad,
-      premios: premiosConFoto,
-      portadaUrl,
-      fechaSorteo: borrador.fechaSorteo,
-      yape: borrador.yape,
-      titular: borrador.titular.trim(),
-      portadaPaleta: borrador.portadaPaleta,
-    });
+    let resultado;
+    try {
+      resultado = await publicarCampana({
+        causa: borrador.causa.trim(),
+        historia: borrador.historia,
+        meta: borrador.meta,
+        precio: borrador.precio,
+        cantidad: borrador.cantidad,
+        premios: premiosConFoto,
+        portadaUrl,
+        fechaSorteo: borrador.fechaSorteo,
+        yape: borrador.yape,
+        titular: borrador.titular.trim(),
+        portadaPaleta: borrador.portadaPaleta,
+      });
+    } catch {
+      // La página puede ser de un despliegue anterior: los identificadores
+      // de las Server Actions cambian en cada build y el servidor nuevo ya
+      // no los conoce. Como el borrador está en disco, recargar no pierde
+      // nada y vuelve con el código al día para terminar de publicar.
+      const REINTENTO = "yunta.reintento-publicar";
+      if (!sessionStorage.getItem(REINTENTO)) {
+        sessionStorage.setItem(REINTENTO, "1");
+        await marcarPendientePublicar(borrador, paso);
+        window.location.reload();
+        return;
+      }
+
+      setPublicando(false);
+      setError(
+        "Se nos cayó la conexión al publicar. Tu campaña está guardada acá: vuelve a intentarlo.",
+      );
+      return;
+    }
 
     setPublicando(false);
 
     if (resultado.ok) {
+      sessionStorage.removeItem("yunta.reintento-publicar");
       setPublicada(resultado.slug);
       await borrarBorrador();
     } else {
