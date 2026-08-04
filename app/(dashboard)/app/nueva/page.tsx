@@ -99,6 +99,7 @@ export default function NuevaCampanaPage() {
 
     const resultado = await publicarCampana({
       causa: b.causa.trim(),
+      historia: b.historia,
       meta: b.meta,
       precio: b.precio,
       cantidad: b.cantidad,
@@ -164,6 +165,28 @@ export default function NuevaCampanaPage() {
           autoComplete="off"
           aria-label="Para qué estás juntando"
         />
+        {/* La historia es lo que hace que alguien comparta. Va acá y no en
+            un paso propio: sumar pantallas encarece los dos minutos. */}
+        {b.causa.trim().length >= 4 && (
+          <label className="mt-5 block">
+            <span className="text-sm font-medium">
+              ¿Quieres contar un poco más?{" "}
+              <span className="font-normal text-tinta-45">Opcional</span>
+            </span>
+            <textarea
+              rows={4}
+              value={b.historia}
+              onChange={(e) => set({ historia: e.target.value })}
+              maxLength={600}
+              placeholder="Quiénes son, qué está pasando y para qué es la plata. Dos o tres líneas bastan."
+              className="mt-2 w-full rounded-talon-sm border-2 border-tinta-15 bg-papel-alto p-4 leading-relaxed outline-none placeholder:text-tinta-45 focus:border-anil"
+            />
+            <span className="mt-1 block text-xs text-tinta-45">
+              Es lo que la gente lee antes de decidir si apoya.
+            </span>
+          </label>
+        )}
+
         <div className="mt-4">
           <Chips
             opciones={CAUSAS}
@@ -480,13 +503,14 @@ export default function NuevaCampanaPage() {
       <PasoPregunta
         {...marco}
         pregunta="¿A qué número te yapean?"
-        ayuda="Es el número que van a ver tus compradores para pagarte."
+        ayuda="No va en tu página: solo lo ve quien ya eligió sus números y está por pagarte."
         eco={
           b.yape.length === 9 && (
             <p>
               Cada pago te llega directo a tu Yape.
               <span className="mt-1 block text-sm text-tinta-70">
-                Yunta no recibe ni retiene tu dinero en ningún momento.
+                Yunta no recibe ni retiene tu dinero, y tu número no queda publicado
+                en la página de la campaña.
               </span>
             </p>
           )
@@ -619,8 +643,18 @@ export default function NuevaCampanaPage() {
         </div>
       </div>
 
+      {/* Publicar no se puede deshacer: callarlo es lo que traba el último clic. */}
+      <div className="mt-6 rounded-talon border-2 border-tara bg-tara-suave p-5">
+        <p className="font-medium">Revisa antes de publicar</p>
+        <p className="mt-2 text-sm leading-relaxed text-tinta-70">
+          Todavía no se puede editar una campaña publicada, así que sale a la calle
+          tal como la ves acá arriba. Mira sobre todo el precio, la cantidad de
+          números y la fecha.
+        </p>
+      </div>
+
       {/* Lo que deja de ser su problema apenas publique */}
-      <div className="mt-6 rounded-talon bg-anil-suave p-5">
+      <div className="mt-4 rounded-talon bg-anil-suave p-5">
         <p className="font-medium">Desde que publiques, Yunta lleva la cuenta</p>
         <ul className="mt-3 space-y-2 text-sm leading-relaxed text-tinta-70">
           <li>· Bloquea cada número apenas alguien lo elige</li>

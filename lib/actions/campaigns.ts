@@ -10,6 +10,7 @@ export type ResultadoPublicar =
 
 type DatosCampana = {
   causa: string;
+  historia?: string | null;
   meta: number | null;
   precio: number;
   cantidad: number;
@@ -58,6 +59,7 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
       owner_id: user.id,
       slug,
       goal_title: capitalizar(datos.causa),
+      story: datos.historia?.trim() ? capitalizar(datos.historia) : null,
       goal_amount: datos.meta,
       cover_source: datos.portadaUrl ? "photo" : "typographic",
       cover_url: datos.portadaUrl ?? null,

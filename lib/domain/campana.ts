@@ -10,6 +10,7 @@ export type Premio = {
 
 export type BorradorCampana = {
   causa: string;              // "El viaje de promoción de la 5.° B"
+  historia: string;           // opcional, pero es lo que hace que alguien comparta
   meta: number | null;        // opcional: puede no saberlo todavía
   metaOmitida: boolean;       // marcó "todavía no lo sé"
   portadaFoto: string | null; // vista previa local
@@ -26,6 +27,7 @@ export type BorradorCampana = {
 
 export const BORRADOR_VACIO: BorradorCampana = {
   causa: "",
+  historia: "",
   meta: null,
   metaOmitida: false,
   portadaFoto: null,
