@@ -162,10 +162,11 @@
      una monoespaciada dice "código", y acá el número es el protagonista
      emocional. Tabular para que no bailen al actualizarse. */
   .cifra {
-    font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-    font-weight: 700;
+    font-family: var(--font-cifras), ui-sans-serif, system-ui, sans-serif;
+    font-variation-settings: "wdth" 118;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
   }
 
   /* Sello: etiqueta de estado en vocabulario de imprenta. */

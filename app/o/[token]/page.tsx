@@ -3,7 +3,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { NumberStub } from "@/components/raffle/number-stub";
+import { TicketTalon } from "@/components/campaign/ticket-talon";
 import { BarraMeta } from "@/components/campaign/barra-meta";
 import { TiraCausa } from "@/components/campaign/tira-causa";
 import { campanaDemo, recaudado } from "@/lib/mock/campana";
@@ -63,17 +63,20 @@ export default function EstadoOrdenPage({
           <span className="font-mono text-xs text-tinta-45">{codigo}</span>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-1.5">
+        <div className="mt-4 space-y-2">
           {numeros.map((n) => (
-            <span key={n} className="w-12">
-              <NumberStub
-                numero={n}
-                estado={etapa >= 2 ? "vendido" : "reservado"}
-                digitos={String(c.cantidad).length}
-              />
-            </span>
+            <TicketTalon
+              key={n}
+              numero={n}
+              digitos={String(c.cantidad).length}
+              codigo={codigo}
+              confirmado={etapa >= 2}
+            />
           ))}
         </div>
+        <p className="mt-3 text-xs leading-relaxed text-tinta-45">
+          Tu mitad se queda contigo. La otra entra al ánfora el día del sorteo.
+        </p>
 
         <p className="mt-4 text-sm text-tinta-70">
           Aportaste <span className="font-mono font-medium">{money(total)}</span> · sorteo

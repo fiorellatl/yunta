@@ -78,14 +78,12 @@ export default async function MisCampanasPage() {
                     </span>
                   </div>
 
-                  {c.status !== "draft" && (
-                    <Link
-                      href={`/r/${c.slug}`}
-                      className="mt-4 block text-sm font-medium text-anil"
-                    >
-                      Ver la página pública →
-                    </Link>
-                  )}
+                  <Link
+                    href={`/app/campanas/${c.id}`}
+                    className="mt-4 block text-sm font-medium text-anil"
+                  >
+                    Administrar mi campaña →
+                  </Link>
                 </li>
               );
             })}

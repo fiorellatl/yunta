@@ -114,6 +114,46 @@ export async function misCampanas() {
   });
 }
 
+/** Todo lo que necesita el panel del organizador para una campaña suya. */
+export async function campanaDelOrganizador(id: string) {
+  if (!hayBase()) return null;
+  const supabase = await createClient();
+
+  const { data: campana } = await supabase
+    .from("campaigns")
+    .select("*, prizes(*)")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!campana) return null;
+
+  const [{ data: ordenes }, { data: numeros }] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("*")
+      .eq("campaign_id", id)
+      .order("created_at", { ascending: false }),
+    supabase.from("campaign_numbers").select("number, status, order_id").eq("campaign_id", id),
+  ]);
+
+  const vendidos = (numeros ?? []).filter((n) => n.status === "sold");
+  const numerosDe = (ordenId: string) =>
+    (numeros ?? [])
+      .filter((n) => n.order_id === ordenId)
+      .map((n) => n.number)
+      .sort((a, b) => a - b);
+
+  return {
+    campana: campana as unknown as Campaign & { prizes: Prize[] },
+    ordenes: (ordenes ?? []).map((o) => ({ ...o, numeros: numerosDe(o.id) })),
+    numeros: numeros ?? [],
+    vendidos: vendidos.length,
+    reservados: (numeros ?? []).filter((n) => n.status === "reserved").length,
+    recaudado: vendidos.length * Number(campana.price_per_number),
+    apoyos: new Set(vendidos.map((n) => n.order_id).filter(Boolean)).size,
+  };
+}
+
 /** Órdenes esperando revisión, para el aviso del panel. */
 export async function ordenesPendientes(campaignIds: string[]) {
   if (!campaignIds.length || !hayBase()) return {} as Record<string, number>;
