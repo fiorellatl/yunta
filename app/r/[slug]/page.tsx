@@ -7,6 +7,7 @@ import { Podio } from "@/components/campaign/podio";
 import { Franja } from "@/components/campaign/franja";
 import { SelloVerificable } from "@/components/campaign/sello-verificable";
 import { obtenerCampana } from "@/lib/data/campanas";
+import { enFrase } from "@/lib/domain/texto";
 import { fechaLarga, money, moneyCorto } from "@/lib/format";
 
 /** Lo que se lee bajo la imagen cuando alguien pega el enlace en un chat. */
@@ -25,7 +26,7 @@ export async function generateMetadata({
 
   return {
     title: `${c.goal_title} · Yunta`,
-    description: `${nombre} está juntando para ${c.goal_title.toLowerCase()}. Cada número cuesta ${precio} y entra al sorteo. Elige el tuyo.`,
+    description: `${nombre} está juntando para ${enFrase(c.goal_title)}. Cada número cuesta ${precio} y entra al sorteo. Elige el tuyo.`,
     openGraph: {
       title: c.goal_title,
       description: `Cada número cuesta ${precio}. Súmate a la causa de ${nombre}.`,

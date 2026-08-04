@@ -5,6 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { VistaCompartir } from "@/components/create/vista-compartir";
 import { moneyCorto } from "@/lib/format";
 
 /**
@@ -18,6 +19,10 @@ import { moneyCorto } from "@/lib/format";
 export function Continuidad({
   causa,
   meta,
+  precio,
+  organizador,
+  foto,
+  paleta,
   correoSesion,
   terminos,
   onTerminos,
@@ -29,6 +34,10 @@ export function Continuidad({
 }: {
   causa: string;
   meta: number;
+  precio: number;
+  organizador: string;
+  foto: string | null;
+  paleta?: number;
   correoSesion: string | null;
   terminos: boolean;
   onTerminos: (v: boolean) => void;
@@ -143,12 +152,19 @@ export function Continuidad({
         Ahora vamos a guardarla para que puedas compartirla y administrarla.
       </p>
 
-      <div className="mt-6 rounded-talon bg-anil-suave px-5 py-4">
-        <p className="font-display text-lg font-bold leading-tight">{causa}</p>
-        <p className="mt-1 text-sm text-tinta-70">
-          Meta de <span className="cifra">{moneyCorto(meta)}</span>
-        </p>
+      <div className="mt-6">
+        <VistaCompartir
+          causa={causa}
+          meta={meta}
+          precio={precio}
+          organizador={organizador}
+          foto={foto}
+          paleta={paleta}
+        />
       </div>
+      <p className="mt-3 text-center text-sm text-tinta-70">
+        Meta de <span className="cifra">{moneyCorto(meta)}</span>
+      </p>
 
       {/* Los términos, junto al botón, en el momento de decidir */}
       <label className="mt-7 flex items-start gap-3">

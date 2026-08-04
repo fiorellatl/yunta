@@ -14,7 +14,9 @@
   #     todo lo que hace pasa por RLS.
   # SUPABASE_SECRET_KEY NO va acá: se salta RLS y solo vive en el servidor.
   # Si alguna vez aparece en el build, el escáner debe frenar el deploy.
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+  #   · NEXT_PUBLIC_SUPABASE_URL: la dirección del proyecto, va en cada
+  #     petición que hace el navegador; es imposible mantenerla oculta.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,NEXT_PUBLIC_SUPABASE_URL"
 
 # El plugin oficial adapta el App Router de Next a las funciones de Netlify:
 # sin él, las rutas dinámicas y los Server Actions no se despliegan.

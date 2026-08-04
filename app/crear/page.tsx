@@ -9,6 +9,7 @@ import { PremiosEditor } from "@/components/create/premios-editor";
 import { CampanaIniciada } from "@/components/create/campana-iniciada";
 import { Continuidad } from "@/components/create/continuidad";
 import { AvisoBorrador } from "@/components/create/aviso-borrador";
+import { VistaCompartir } from "@/components/create/vista-compartir";
 import { Franja } from "@/components/campaign/franja";
 import { publicarCampana } from "@/lib/actions/campaigns";
 import { subirImagen } from "@/lib/supabase/storage";
@@ -200,6 +201,10 @@ export default function CrearCampanaPage() {
       <Continuidad
         causa={b.causa.trim()}
         meta={b.meta ?? total ?? 0}
+        precio={b.precio ?? 0}
+        organizador={b.titular}
+        foto={b.portadaFoto}
+        paleta={b.portadaPaleta ?? undefined}
         correoSesion={correoSesion}
         terminos={b.terminos}
         onTerminos={(v) => set({ terminos: v })}
@@ -378,7 +383,7 @@ export default function CrearCampanaPage() {
       <PasoPregunta
         {...marco}
         pregunta="Ponle cara a tu campaña"
-        ayuda="Una foto de las personas, del equipo, del lugar. Si no tienes una, ya te armamos esta portada."
+        ayuda="Es la imagen que va a aparecer cuando la mandes por WhatsApp. Sube una foto de las personas o del lugar, o quédate con la que te armamos."
         textoAvanzar={b.portadaFoto ? "Siguiente" : "Usar esta portada"}
       >
         <PortadaCampana
@@ -659,8 +664,22 @@ export default function CrearCampanaPage() {
       puedeAvanzar
       onAvanzar={() => setFase("continuidad")}
     >
+      {/* Lo primero: lo que de verdad va a mandar por WhatsApp */}
+      <VistaCompartir
+        causa={b.causa}
+        meta={b.meta}
+        precio={b.precio ?? 0}
+        organizador={b.titular}
+        foto={b.portadaFoto}
+        paleta={b.portadaPaleta ?? undefined}
+      />
+
+      <p className="mt-6 text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+        Y esta es su página
+      </p>
+
       {/* Ticket de rifa: portada arriba, premios al centro, talón abajo */}
-      <div className="overflow-hidden rounded-talon border-2 border-tinta bg-papel-alto">
+      <div className="mt-2 overflow-hidden rounded-talon border-2 border-tinta bg-papel-alto">
         <Franja alto={9} />
 
         <div className="p-4">
