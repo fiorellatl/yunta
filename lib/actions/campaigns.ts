@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { generarSlug, paletaDe } from "@/lib/domain/campana";
+import { capitalizar } from "@/lib/domain/texto";
 
 export type ResultadoPublicar =
   | { ok: true; slug: string }
@@ -56,7 +57,7 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
     .insert({
       owner_id: user.id,
       slug,
-      goal_title: datos.causa,
+      goal_title: capitalizar(datos.causa),
       goal_amount: datos.meta,
       cover_source: datos.portadaUrl ? "photo" : "typographic",
       cover_url: datos.portadaUrl ?? null,
@@ -80,7 +81,7 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
     datos.premios.map((p) => ({
       campaign_id: campana.id,
       position: p.posicion,
-      name: p.nombre,
+      name: capitalizar(p.nombre),
       image_url: p.fotoUrl ?? null,
     })),
   );

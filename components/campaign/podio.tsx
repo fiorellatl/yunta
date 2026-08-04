@@ -1,4 +1,5 @@
 import { ordinal } from "@/lib/domain/campana";
+import { capitalizar } from "@/lib/domain/texto";
 
 export type PremioVisible = {
   id?: string;
@@ -22,7 +23,11 @@ const TONOS: Record<number, { borde: string; chip: string; texto: string }> = {
 export function Podio({ premios }: { premios: PremioVisible[] }) {
   if (!premios.length) return null;
 
-  const [primero, ...resto] = [...premios].sort((a, b) => a.position - b.position);
+  // También al mostrar, no solo al guardar: así se ven cuidadas las
+  // campañas creadas antes de que existiera la normalización.
+  const [primero, ...resto] = [...premios]
+    .sort((a, b) => a.position - b.position)
+    .map((p) => ({ ...p, name: capitalizar(p.name) }));
   const tono = TONOS[primero.position] ?? TONOS[3];
 
   return (

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PortadaCampana } from "@/components/create/portada-campana";
 import { BarraMeta } from "@/components/campaign/barra-meta";
 import { ButtonLink } from "@/components/ui/button";
 import { Podio } from "@/components/campaign/podio";
 import { Franja } from "@/components/campaign/franja";
+import { SelloVerificable } from "@/components/campaign/sello-verificable";
 import { obtenerCampana } from "@/lib/data/campanas";
-import { fechaLarga, money } from "@/lib/format";
+import { fechaLarga, money, moneyCorto } from "@/lib/format";
 
 /** Lo que se lee bajo la imagen cuando alguien pega el enlace en un chat. */
 export async function generateMetadata({
@@ -46,12 +46,12 @@ export default async function CampanaPublicaPage({
 
   const precio = Number(c.price_per_number);
   const meta = c.goal_amount ? Number(c.goal_amount) : null;
+  const maximo = precio * c.total_numbers;
   const fecha = c.draw_date ? new Date(c.draw_date) : null;
   const dias = fecha
     ? Math.max(0, Math.ceil((fecha.getTime() - Date.now()) / 86400000))
     : null;
-  // Solo el primer nombre: "María" es una persona, "María Quispe Huamán" es un registro.
-  const primerNombre = c.organizador.trim().split(" ")[0] || "El organizador";
+  const primerNombre = c.organizador.trim().split(" ")[0] || "el organizador";
 
   return (
     <main className="mx-auto max-w-md px-5 pb-32 pt-6">
@@ -66,36 +66,47 @@ export default async function CampanaPublicaPage({
         )}
       </header>
 
-      {/* 1 · La causa, antes que nada */}
-      <div className="mt-6">
-        <PortadaCampana
-          causa={c.goal_title}
-          meta={meta}
-          foto={c.cover_url}
-          paleta={c.cover_palette}
+      {/* La foto solo si es una foto de verdad. La portada tipográfica
+          existe para la imagen que se comparte, no para repetir el título. */}
+      {c.cover_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={c.cover_url}
+          alt={c.goal_title}
+          className="mt-6 aspect-[16/10] w-full rounded-talon object-cover"
         />
-      </div>
+      )}
 
-      <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-cochinilla">
-        {primerNombre} está juntando para
+      {/* 1 · La causa domina. Es el H1 y nada compite con él. */}
+      <h1 className="mt-8 text-[clamp(2.4rem,10vw,3.6rem)] uppercase leading-[0.98]">
+        {c.goal_title}
+      </h1>
+
+      <p className="mt-6 text-2xl leading-snug">
+        Estamos juntando{" "}
+        <span className="cifra whitespace-nowrap">{moneyCorto(meta ?? maximo)}</span>
       </p>
-      <h1 className="mt-2 text-[clamp(1.9rem,6.5vw,2.6rem)]">{c.goal_title}</h1>
+      <p className="mt-1 text-lg text-tinta-70">por {primerNombre}</p>
 
-      {/* 2 · Cómo va. Una causa a medio camino convence más que una vacía. */}
-      <div className="mt-7 rounded-talon border border-tinta-15 bg-papel-alto p-5">
+      <ButtonLink href={`/r/${c.slug}/comprar`} tamano="lg" className="mt-7 w-full">
+        Quiero apoyar
+      </ButtonLink>
+
+      {/* 2 · Cómo va. La meta ya se dijo arriba: acá solo el avance. */}
+      <div className="mt-8 rounded-talon border border-tinta-15 bg-papel-alto p-5">
         <BarraMeta
           recaudado={c.recaudado}
           meta={meta}
-          maximo={precio * c.total_numbers}
+          maximo={maximo}
           vendidos={c.vendidos.length}
           cantidad={c.total_numbers}
+          mostrarMeta={false}
         />
 
         {c.apoyos > 0 && (
           <p className="mt-4 border-t border-tinta-15 pt-4 text-sm">
             <span className="cifra text-lg">{c.apoyos}</span>{" "}
             {c.apoyos === 1 ? "persona ya se sumó" : "personas ya se sumaron"}
-            {c.apoyos >= 3 && <span className="text-tinta-45"> · súmate tú</span>}
           </p>
         )}
       </div>
@@ -107,7 +118,7 @@ export default async function CampanaPublicaPage({
         </section>
       )}
 
-      {/* 4 · Recién ahora, el incentivo — pero con todo su peso visual */}
+      {/* 4 · Los premios apoyan la decisión, no compiten con la causa */}
       {c.prizes.length > 0 && (
         <section className="mt-12">
           <Franja alto={6} className="rounded-full" />
@@ -126,7 +137,7 @@ export default async function CampanaPublicaPage({
         </section>
       )}
 
-      {/* 5 · Quién está detrás. Una cara, no una etiqueta. */}
+      {/* 5 · Quién está detrás */}
       <section className="mt-12 overflow-hidden rounded-talon border-2 border-tinta-15 bg-papel-alto">
         <Franja alto={7} />
         <div className="p-6">
@@ -152,7 +163,7 @@ export default async function CampanaPublicaPage({
         </div>
       </section>
 
-      {/* La letra no tan chica: al final, para quien quiera saber cómo */}
+      {/* La letra no tan chica */}
       <section className="mt-10 border-t border-tinta-15 pt-6">
         <h2 className="text-base font-semibold">Y el sorteo no lo decide nadie</h2>
         <p className="mt-2 text-sm leading-relaxed text-tinta-45">
@@ -161,13 +172,12 @@ export default async function CampanaPublicaPage({
           ganador. Si quieres, después puedes rehacer la cuenta tú mismo y comprobar
           que salió así.
         </p>
-        {c.seed_hash && (
-          <p className="mt-3 break-all font-mono text-[0.65rem] text-tinta-15">
-            {c.seed_hash}
-          </p>
-        )}
+        {c.seed_hash && <SelloVerificable hash={c.seed_hash} />}
         <p className="mt-4 text-sm text-tinta-45">
-          <Link href="/legal/terminos" className="underline underline-offset-4 hover:text-tinta">
+          <Link
+            href="/legal/terminos"
+            className="underline underline-offset-4 hover:text-tinta"
+          >
             Cómo funciona Yunta
           </Link>
         </p>

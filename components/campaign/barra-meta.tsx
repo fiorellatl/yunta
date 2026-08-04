@@ -12,6 +12,7 @@ export function BarraMeta({
   vendidos,
   cantidad,
   tono = "claro",
+  mostrarMeta = true,
 }: {
   recaudado: number;
   meta: number | null;
@@ -19,6 +20,8 @@ export function BarraMeta({
   vendidos: number;
   cantidad: number;
   tono?: "claro" | "oscuro";
+  /** En la página pública la meta ya se dice arriba: repetirla es ruido. */
+  mostrarMeta?: boolean;
 }) {
   const referencia = meta ?? maximo;
   const avance = Math.min(100, Math.round((recaudado / referencia) * 100));
@@ -30,9 +33,11 @@ export function BarraMeta({
         <span className="cifra text-4xl">
           {moneyCorto(recaudado)}
         </span>
-        <span className={`cifra text-sm ${oscuro ? "text-tinta-15" : "text-tinta-45"}`}>
-          {meta ? `de ${moneyCorto(meta)}` : `hasta ${moneyCorto(maximo)}`}
-        </span>
+        {mostrarMeta && (
+          <span className={`cifra text-sm ${oscuro ? "text-tinta-15" : "text-tinta-45"}`}>
+            {meta ? `de ${moneyCorto(meta)}` : `hasta ${moneyCorto(maximo)}`}
+          </span>
+        )}
       </div>
 
       <div

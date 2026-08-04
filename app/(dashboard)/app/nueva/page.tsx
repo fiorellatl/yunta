@@ -34,12 +34,15 @@ import {
   sumarDias,
 } from "@/lib/format";
 
+// Semillas para empezar a escribir, no respuestas cerradas: al tocarlas
+// rellenan el campo y dejan el cursor listo para que el organizador
+// termine la frase con lo suyo.
 const CAUSAS = [
-  "Un viaje de promoción",
-  "Un tratamiento médico",
-  "Mi equipo o banda",
-  "Un emprendimiento",
-  "Un albergue de animales",
+  "El viaje de promoción de ",
+  "El tratamiento de ",
+  "Los uniformes de ",
+  "Mi emprendimiento de ",
+  "El albergue de ",
 ];
 const METAS = [1000, 2000, 5000, 10000] as const;
 const PLAZOS = [7, 14, 30] as const;
@@ -142,7 +145,7 @@ export default function NuevaCampanaPage() {
       <PasoPregunta
         {...marco}
         pregunta="¿Para qué estás juntando?"
-        ayuda="Dilo como se lo contarías a alguien. Esto es lo que va a mover a la gente."
+        ayuda="Dilo como se lo contarías a alguien. Empieza con una de abajo y termínala con lo tuyo."
         eco={
           b.causa.trim().length >= 4 && (
             <p className="font-display text-xl leading-tight">
@@ -164,9 +167,19 @@ export default function NuevaCampanaPage() {
         <div className="mt-4">
           <Chips
             opciones={CAUSAS}
-            valor={CAUSAS.includes(b.causa) ? b.causa : null}
-            onElegir={(v) => set({ causa: v })}
-            etiqueta="Causas frecuentes"
+            valor={null}
+            onElegir={(v) => {
+              set({ causa: v });
+              // El cursor queda al final para seguir escribiendo de una.
+              requestAnimationFrame(() => {
+                const campo = primerCampo.current;
+                if (!campo) return;
+                campo.focus();
+                campo.setSelectionRange(v.length, v.length);
+              });
+            }}
+            formato={(v) => v.trim() + "…"}
+            etiqueta="Para empezar"
           />
         </div>
       </PasoPregunta>
