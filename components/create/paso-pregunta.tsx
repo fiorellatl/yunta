@@ -14,6 +14,7 @@ export function PasoPregunta({
   ayuda,
   children,
   eco,
+  aviso,
   puedeAvanzar,
   textoAvanzar = "Siguiente",
   onAvanzar,
@@ -26,6 +27,8 @@ export function PasoPregunta({
   ayuda?: string;
   children: ReactNode;
   eco?: ReactNode;
+  /** Franja informativa bajo el avance. No interrumpe: se puede ignorar. */
+  aviso?: ReactNode;
   puedeAvanzar: boolean;
   textoAvanzar?: string;
   onAvanzar: () => void;
@@ -81,6 +84,8 @@ export function PasoPregunta({
             {indice + 1}/{total}
           </span>
         </div>
+
+        {aviso && <div className="mt-4">{aviso}</div>}
       </header>
 
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-5 py-10">

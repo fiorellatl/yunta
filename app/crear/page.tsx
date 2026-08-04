@@ -8,6 +8,7 @@ import { PortadaCampana } from "@/components/create/portada-campana";
 import { PremiosEditor } from "@/components/create/premios-editor";
 import { CampanaIniciada } from "@/components/create/campana-iniciada";
 import { Continuidad } from "@/components/create/continuidad";
+import { AvisoBorrador } from "@/components/create/aviso-borrador";
 import { Franja } from "@/components/campaign/franja";
 import { publicarCampana } from "@/lib/actions/campaigns";
 import { subirImagen } from "@/lib/supabase/storage";
@@ -66,6 +67,7 @@ export default function CrearCampanaPage() {
   const [publicada, setPublicada] = useState<string | null>(null);
   const [correoSesion, setCorreoSesion] = useState<string | null>(null);
   const [listo, setListo] = useState(false);
+  const [retomando, setRetomando] = useState(false);
   const primerCampo = useRef<HTMLInputElement>(null);
 
   const actual = PASOS[paso];
@@ -109,6 +111,19 @@ export default function CrearCampanaPage() {
       if (guardado) {
         setB(guardado.borrador);
         setPaso(guardado.paso);
+
+        // El aviso solo si volvió en otra sesión del navegador: recargar
+        // en medio del flujo no debería interrumpir a nadie.
+        const MISMA_SESION = "yunta.sesion";
+        const tieneAlgoQueRetomar = guardado.borrador.causa.trim().length > 0;
+        if (
+          tieneAlgoQueRetomar &&
+          !sessionStorage.getItem(MISMA_SESION) &&
+          !guardado.pendientePublicar
+        ) {
+          setRetomando(true);
+        }
+        sessionStorage.setItem(MISMA_SESION, "1");
 
         if (guardado.pendientePublicar && user) {
           // Se limpia la marca antes de publicar: si recarga a mitad,
@@ -213,12 +228,26 @@ export default function CrearCampanaPage() {
     );
   }
 
+  async function empezarDeNuevo() {
+    await borrarBorrador();
+    setB(BORRADOR_VACIO);
+    setPaso(0);
+    setRetomando(false);
+  }
+
   const marco = {
     indice: paso,
     total: TOTAL,
     puedeAvanzar: puede,
     onAvanzar: avanzar,
     onAtras: paso > 0 ? atras : undefined,
+    aviso: retomando ? (
+      <AvisoBorrador
+        causa={b.causa.trim()}
+        onContinuar={() => setRetomando(false)}
+        onEmpezarDeNuevo={empezarDeNuevo}
+      />
+    ) : undefined,
   };
 
   // 1 · La causa. La primera pregunta es por qué, no por qué cosa.
