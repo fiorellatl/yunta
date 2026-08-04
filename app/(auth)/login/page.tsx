@@ -7,6 +7,26 @@ import { Button } from "@/components/ui/button";
 
 type Estado = { tipo: "listo" | "enviando" | "enviado" | "error"; mensaje?: string };
 
+/**
+ * Un error de acceso tiene que decir qué pasó y qué hacer. "Revisa la
+ * dirección" mandaba a corregir un correo que estaba bien, cuando el
+ * problema real era el límite de envíos.
+ */
+function mensajeDeError(error: { code?: string; status?: number; message?: string }) {
+  const codigo = error.code ?? "";
+
+  if (codigo.includes("rate_limit") || error.status === 429) {
+    return "Pediste varios enlaces seguidos y llegamos al límite de envíos. Espera unos minutos y vuelve a intentar.";
+  }
+  if (codigo.includes("email_address_invalid") || codigo.includes("validation")) {
+    return "Esa dirección no parece válida. Revísala e inténtalo otra vez.";
+  }
+  if (codigo.includes("signup_disabled")) {
+    return "Por ahora el acceso está cerrado. Escríbenos para entrar al piloto.";
+  }
+  return "No pudimos enviar el correo. Inténtalo de nuevo en un momento.";
+}
+
 export default function LoginPage() {
   const [correo, setCorreo] = useState("");
   const [estado, setEstado] = useState<Estado>({ tipo: "listo" });
@@ -35,11 +55,7 @@ export default function LoginPage() {
       },
     });
 
-    setEstado(
-      error
-        ? { tipo: "error", mensaje: "No pudimos enviar el correo. Revisa la dirección e inténtalo otra vez." }
-        : { tipo: "enviado" },
-    );
+    setEstado(error ? { tipo: "error", mensaje: mensajeDeError(error) } : { tipo: "enviado" });
   }
 
   async function entrarConGoogle() {
