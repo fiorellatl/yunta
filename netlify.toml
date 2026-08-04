@@ -5,6 +5,17 @@
 [build.environment]
   NODE_VERSION = "22"
 
+  # El escáner de secretos de Netlify busca los valores de las variables de
+  # entorno dentro del build. Las que empiezan con NEXT_PUBLIC_ se hornean en
+  # el bundle a propósito —viven en el navegador— así que aparecen siempre y
+  # bloquean el deploy. Estas dos son públicas por diseño:
+  #   · NEXT_PUBLIC_SITE_URL: la URL del sitio, visible en cada enlace.
+  #   · NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: clave pensada para el cliente;
+  #     todo lo que hace pasa por RLS.
+  # SUPABASE_SECRET_KEY NO va acá: se salta RLS y solo vive en el servidor.
+  # Si alguna vez aparece en el build, el escáner debe frenar el deploy.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+
 # El plugin oficial adapta el App Router de Next a las funciones de Netlify:
 # sin él, las rutas dinámicas y los Server Actions no se despliegan.
 [[plugins]]
