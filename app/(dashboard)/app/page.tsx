@@ -14,7 +14,7 @@ export default async function MisCampanasPage() {
       <header className="flex items-center justify-between">
         <span className="font-display text-2xl font-extrabold tracking-tight">Yunta</span>
         {campanas.length > 0 && (
-          <ButtonLink href="/app/nueva" variante="secundario">
+          <ButtonLink href="/crear" variante="secundario">
             Nueva campaña
           </ButtonLink>
         )}
@@ -27,7 +27,7 @@ export default async function MisCampanasPage() {
             Cuéntala en dos minutos y compártela hoy mismo. Nosotros armamos los
             números, el precio y la portada.
           </p>
-          <ButtonLink href="/app/nueva" tamano="lg" className="mt-8 w-full">
+          <ButtonLink href="/crear" tamano="lg" className="mt-8 w-full">
             Empieza tu campaña
           </ButtonLink>
         </div>
@@ -89,7 +89,7 @@ export default async function MisCampanasPage() {
             })}
           </ul>
 
-          <ButtonLink href="/app/nueva" variante="secundario" className="mt-8 w-full">
+          <ButtonLink href="/crear" variante="secundario" className="mt-8 w-full">
             Empezar otra campaña
           </ButtonLink>
         </>

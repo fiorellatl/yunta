@@ -73,7 +73,7 @@ export default function Home() {
             campaña, la compartes por WhatsApp y recaudas con total transparencia.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <ButtonLink href="/app/nueva" tamano="lg">
+            <ButtonLink href="/crear" tamano="lg">
               Empieza tu campaña
             </ButtonLink>
             <ButtonLink
@@ -251,7 +251,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex justify-center">
               <ButtonLink
-                href="/app/nueva"
+                href="/crear"
                 tamano="lg"
                 className="bg-tara text-tinta shadow-[0_2px_0_0_#a8760f] hover:bg-[#f2b02a]"
               >

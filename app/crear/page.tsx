@@ -7,9 +7,18 @@ import { Input, InputCifra } from "@/components/ui/input";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { PremiosEditor } from "@/components/create/premios-editor";
 import { CampanaIniciada } from "@/components/create/campana-iniciada";
+import { Continuidad } from "@/components/create/continuidad";
 import { Franja } from "@/components/campaign/franja";
 import { publicarCampana } from "@/lib/actions/campaigns";
 import { subirImagen } from "@/lib/supabase/storage";
+import { createClient } from "@/lib/supabase/client";
+import {
+  borrarBorrador,
+  guardarBorrador,
+  leerBorrador,
+  limpiarMarcaPublicar,
+  marcarPendientePublicar,
+} from "@/lib/draft/borrador";
 import {
   BORRADOR_VACIO,
   PASOS,
@@ -48,12 +57,15 @@ const METAS = [1000, 2000, 5000, 10000] as const;
 const PLAZOS = [7, 14, 30] as const;
 const TOTAL = PASOS.length;
 
-export default function NuevaCampanaPage() {
+export default function CrearCampanaPage() {
   const [paso, setPaso] = useState(0);
   const [b, setB] = useState<BorradorCampana>(BORRADOR_VACIO);
+  const [fase, setFase] = useState<"armando" | "continuidad">("armando");
   const [publicando, setPublicando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publicada, setPublicada] = useState<string | null>(null);
+  const [correoSesion, setCorreoSesion] = useState<string | null>(null);
+  const [listo, setListo] = useState(false);
   const primerCampo = useRef<HTMLInputElement>(null);
 
   const actual = PASOS[paso];
@@ -78,19 +90,66 @@ export default function NuevaCampanaPage() {
     primerCampo.current?.focus();
   }, [paso]);
 
-  async function publicar() {
-    if (!b.precio || !b.cantidad) return;
+  // Al abrir: recupera el borrador y, si volvemos de autenticarnos con la
+  // publicación pendiente, la termina sola. El usuario no vuelve a decidir.
+  useEffect(() => {
+    let vivo = true;
+
+    (async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const guardado = await leerBorrador();
+      if (!vivo) return;
+
+      if (user?.email) setCorreoSesion(user.email);
+
+      if (guardado) {
+        setB(guardado.borrador);
+        setPaso(guardado.paso);
+
+        if (guardado.pendientePublicar && user) {
+          // Se limpia la marca antes de publicar: si recarga a mitad,
+          // no queremos crear la campaña dos veces.
+          await limpiarMarcaPublicar();
+          setFase("continuidad");
+          publicar(guardado.borrador);
+        } else if (guardado.pendientePublicar) {
+          setFase("continuidad");
+        }
+      }
+
+      setListo(true);
+    })();
+
+    return () => {
+      vivo = false;
+    };
+    // Solo al montar: es la recuperación inicial.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Espejo en disco de todo lo que va escribiendo.
+  useEffect(() => {
+    if (!listo || publicada) return;
+    guardarBorrador(b, paso);
+  }, [b, paso, listo, publicada]);
+
+  async function publicar(borrador: BorradorCampana = b) {
+    if (!borrador.precio || !borrador.cantidad) return;
     setPublicando(true);
     setError(null);
 
     // Las fotos viven como URLs locales hasta acá; se suben recién ahora,
     // cuando ya sabemos que la campaña se va a publicar de verdad.
-    const portadaUrl = b.portadaArchivo
-      ? await subirImagen(b.portadaArchivo, "campaign-covers")
+    const portadaUrl = borrador.portadaArchivo
+      ? await subirImagen(borrador.portadaArchivo, "campaign-covers")
       : null;
 
     const premiosConFoto = await Promise.all(
-      premios.map(async (p, i) => ({
+      premiosValidos(borrador.premios).map(async (p, i) => ({
         nombre: p.nombre.trim(),
         posicion: i + 1,
         fotoUrl: p.fotoArchivo ? await subirImagen(p.fotoArchivo, "prize-images") : null,
@@ -98,22 +157,44 @@ export default function NuevaCampanaPage() {
     );
 
     const resultado = await publicarCampana({
-      causa: b.causa.trim(),
-      historia: b.historia,
-      meta: b.meta,
-      precio: b.precio,
-      cantidad: b.cantidad,
+      causa: borrador.causa.trim(),
+      historia: borrador.historia,
+      meta: borrador.meta,
+      precio: borrador.precio,
+      cantidad: borrador.cantidad,
       premios: premiosConFoto,
       portadaUrl,
-      fechaSorteo: b.fechaSorteo,
-      yape: b.yape,
-      titular: b.titular.trim(),
-      portadaPaleta: b.portadaPaleta,
+      fechaSorteo: borrador.fechaSorteo,
+      yape: borrador.yape,
+      titular: borrador.titular.trim(),
+      portadaPaleta: borrador.portadaPaleta,
     });
 
     setPublicando(false);
-    if (resultado.ok) setPublicada(resultado.slug);
-    else setError(resultado.mensaje);
+
+    if (resultado.ok) {
+      setPublicada(resultado.slug);
+      await borrarBorrador();
+    } else {
+      setError(resultado.mensaje);
+    }
+  }
+
+  if (fase === "continuidad" && !publicada) {
+    return (
+      <Continuidad
+        causa={b.causa.trim()}
+        meta={b.meta ?? total ?? 0}
+        correoSesion={correoSesion}
+        terminos={b.terminos}
+        onTerminos={(v) => set({ terminos: v })}
+        onPublicar={() => publicar()}
+        onAtras={() => setFase("armando")}
+        onAntesDeSalir={() => marcarPendientePublicar(b, paso)}
+        error={error}
+        publicando={publicando}
+      />
+    );
   }
 
   if (publicada) {
@@ -545,9 +626,9 @@ export default function NuevaCampanaPage() {
     <PasoPregunta
       {...marco}
       pregunta="Así lo van a ver"
-      textoAvanzar={publicando ? "Publicando…" : "Publicar mi campaña"}
-      puedeAvanzar={puede && !publicando}
-      onAvanzar={publicar}
+      textoAvanzar="Publicar mi campaña"
+      puedeAvanzar
+      onAvanzar={() => setFase("continuidad")}
     >
       {/* Ticket de rifa: portada arriba, premios al centro, talón abajo */}
       <div className="overflow-hidden rounded-talon border-2 border-tinta bg-papel-alto">
@@ -664,24 +745,6 @@ export default function NuevaCampanaPage() {
         </ul>
       </div>
 
-      <label className="mt-6 flex items-start gap-3">
-        <input
-          type="checkbox"
-          checked={b.terminos}
-          onChange={(e) => set({ terminos: e.target.checked })}
-          className="mt-1 h-5 w-5 shrink-0 accent-[var(--anil)]"
-        />
-        <span className="text-sm leading-relaxed text-tinta-70">
-          Esta campaña es mía. Yo entrego los premios y respondo por ella ante quienes
-          me apoyen. Acepto los términos y condiciones de Yunta.
-        </span>
-      </label>
-
-      {error && (
-        <p role="alert" className="mt-4 rounded-talon-sm bg-cochinilla-suave px-4 py-3 text-sm text-tinta">
-          {error}
-        </p>
-      )}
     </PasoPregunta>
   );
 }
