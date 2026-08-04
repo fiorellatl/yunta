@@ -81,7 +81,7 @@ export function PortadaCampana({
       <div className="flex shrink-0 items-end justify-between gap-2">
         {meta ? (
           <span
-            className="whitespace-nowrap rounded-md px-2 py-1 font-mono font-medium"
+            className="cifra whitespace-nowrap rounded-md px-2 py-1"
             style={{
               background: p.tinta,
               color: p.fondo,

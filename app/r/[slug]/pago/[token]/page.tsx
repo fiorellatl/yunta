@@ -103,11 +103,11 @@ export default function PagoPage({
         <dl className="space-y-1 text-sm">
           <div className="flex justify-between">
             <dt className="text-tinta-70">Tus números</dt>
-            <dd className="font-mono">{numeros.length}</dd>
+            <dd className="cifra">{numeros.length}</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-tinta-70">Precio por número</dt>
-            <dd className="font-mono">{money(c.precio)}</dd>
+            <dd className="cifra">{money(c.precio)}</dd>
           </div>
           <div className="flex justify-between pt-1">
             <dt className="font-medium">Total a yapear</dt>

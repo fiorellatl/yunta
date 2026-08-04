@@ -60,7 +60,7 @@ export default function EstadoOrdenPage({
       <section className="mt-8 rounded-talon border border-tinta-15 bg-papel-alto p-5">
         <div className="flex items-baseline justify-between">
           <h2 className="text-lg">Tus números</h2>
-          <span className="font-mono text-sm text-tinta-45">{codigo}</span>
+          <span className="font-mono text-xs text-tinta-45">{codigo}</span>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-1.5">

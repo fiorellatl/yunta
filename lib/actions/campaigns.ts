@@ -12,7 +12,7 @@ type DatosCampana = {
   meta: number | null;
   precio: number;
   cantidad: number;
-  premios: { nombre: string; posicion: number }[];
+  premios: { nombre: string; posicion: number; fotoUrl?: string | null }[];
   fechaSorteo: string;
   yape: string;
   titular: string;
@@ -38,6 +38,15 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
   } = await supabase.auth.getUser();
 
   if (!user) return { ok: false, mensaje: "Tu sesión venció. Entra otra vez." };
+
+  // El acceso es por enlace de correo, así que el perfil nace sin nombre.
+  // El titular del Yape es el nombre real del organizador: lo usamos para
+  // que su campaña no diga "El organizador" en la página pública.
+  await supabase
+    .from("profiles")
+    .update({ full_name: datos.titular })
+    .eq("id", user.id)
+    .is("full_name", null);
 
   const sufijo = Math.random().toString(36).slice(2, 6);
   const slug = generarSlug(datos.causa, sufijo);
@@ -72,6 +81,7 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
       campaign_id: campana.id,
       position: p.posicion,
       name: p.nombre,
+      image_url: p.fotoUrl ?? null,
     })),
   );
 

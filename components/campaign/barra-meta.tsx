@@ -30,7 +30,7 @@ export function BarraMeta({
         <span className="cifra text-4xl">
           {moneyCorto(recaudado)}
         </span>
-        <span className={`font-mono text-sm ${oscuro ? "text-tinta-15" : "text-tinta-45"}`}>
+        <span className={`cifra text-sm ${oscuro ? "text-tinta-15" : "text-tinta-45"}`}>
           {meta ? `de ${moneyCorto(meta)}` : `hasta ${moneyCorto(maximo)}`}
         </span>
       </div>

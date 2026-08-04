@@ -1,12 +1,19 @@
 import { telefonoValido } from "@/lib/format";
 
-export type Premio = { nombre: string; fotoPreview: string | null };
+export type Premio = {
+  nombre: string;
+  fotoPreview: string | null;
+  /** El archivo se guarda para subirlo al publicar: la vista previa
+   *  es una URL local que muere al cerrar la pestaña. */
+  fotoArchivo: File | null;
+};
 
 export type BorradorCampana = {
   causa: string;              // "El viaje de promoción de la 5.° B"
   meta: number | null;        // opcional: puede no saberlo todavía
   metaOmitida: boolean;       // marcó "todavía no lo sé"
-  portadaFoto: string | null; // si subió una foto propia
+  portadaFoto: string | null; // vista previa local
+  portadaArchivo: File | null; // el archivo que se sube al publicar
   portadaPaleta: number | null; // si eligió una portada distinta a la sugerida
   precio: number | null;
   cantidad: number | null;
@@ -22,10 +29,11 @@ export const BORRADOR_VACIO: BorradorCampana = {
   meta: null,
   metaOmitida: false,
   portadaFoto: null,
+  portadaArchivo: null,
   portadaPaleta: null,
   precio: null,
   cantidad: null,
-  premios: [{ nombre: "", fotoPreview: null }],
+  premios: [{ nombre: "", fotoPreview: null, fotoArchivo: null }],
   fechaSorteo: "",
   yape: "",
   titular: "",
@@ -142,7 +150,7 @@ export function premiosDesdeTexto(texto: string): Premio[] {
     .map((l) => l.replace(VINETA, "").trim())
     .filter(Boolean)
     .slice(0, 20)
-    .map((nombre) => ({ nombre, fotoPreview: null }));
+    .map((nombre) => ({ nombre, fotoPreview: null, fotoArchivo: null }));
 }
 
 export function pasoCompleto(paso: Paso, b: BorradorCampana): boolean {

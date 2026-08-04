@@ -20,6 +20,8 @@ export type CampanaConDatos = Campaign & {
   vendidos: number[];
   reservados: number[];
   recaudado: number;
+  /** Personas distintas que ya compraron, no números vendidos. */
+  apoyos: number;
 };
 
 /**
@@ -41,7 +43,7 @@ export async function obtenerCampana(slug: string): Promise<CampanaConDatos | nu
 
   const { data: numeros } = await supabase
     .from("campaign_numbers")
-    .select("number, status")
+    .select("number, status, order_id")
     .eq("campaign_id", campana.id)
     .neq("status", "available");
 
@@ -49,6 +51,14 @@ export async function obtenerCampana(slug: string): Promise<CampanaConDatos | nu
     (numeros ?? []).filter((n) => n.status === estado).map((n) => n.number);
 
   const vendidos = porEstado("sold");
+
+  // Las órdenes no son legibles en público, pero los números sí traen su
+  // order_id: contar los distintos da cuánta gente se sumó, sin exponer nada.
+  const apoyos = new Set(
+    (numeros ?? [])
+      .filter((n) => n.status === "sold" && n.order_id)
+      .map((n) => n.order_id),
+  ).size;
   const perfil = (campana as unknown as {
     profiles: { full_name: string | null; is_verified: boolean } | null;
   }).profiles;
@@ -63,6 +73,7 @@ export async function obtenerCampana(slug: string): Promise<CampanaConDatos | nu
     vendidos,
     reservados: porEstado("reserved"),
     recaudado: vendidos.length * Number(campana.price_per_number),
+    apoyos,
   };
 }
 

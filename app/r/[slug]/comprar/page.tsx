@@ -99,16 +99,16 @@ export default function ComprarPage({
               value={formatearTelefono(telefono)}
               onChange={(e) => setTelefono(e.target.value.replace(/\D/g, "").slice(0, 9))}
               placeholder="987 654 321"
-              className="mt-2 font-mono tabular-nums"
+              className="mt-2 cifra"
             />
           </label>
 
           <div className="mt-7 rounded-talon bg-anil-suave px-5 py-4">
             <p className="text-sm text-tinta-70">Tus números</p>
-            <p className="mt-1 font-mono text-lg">
+            <p className="mt-1 cifra text-lg">
               {elegidos.sort((a, b) => a - b).join(" · ")}
             </p>
-            <p className="mt-2 font-mono text-2xl font-medium">{money(total)}</p>
+            <p className="mt-2 cifra text-3xl">{money(total)}</p>
           </div>
 
           <div className="mt-auto pt-8">

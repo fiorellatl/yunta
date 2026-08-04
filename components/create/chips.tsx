@@ -25,7 +25,7 @@ export function Chips<T extends string | number>({
             onClick={() => onElegir(op)}
             aria-pressed={activo}
             className={[
-              "rounded-talon-sm border-2 px-4 py-2 font-mono text-sm transition-colors",
+              "cifra rounded-talon-sm border-2 px-4 py-2 text-sm transition-colors",
               activo
                 ? "border-anil bg-anil text-white"
                 : "border-tinta-15 bg-papel-alto text-tinta hover:border-anil",

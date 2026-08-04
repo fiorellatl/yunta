@@ -16,7 +16,7 @@ export function InputCifra({
 }: ComponentProps<"input"> & { prefijo?: string; sufijo?: string }) {
   return (
     <div className={["flex items-center gap-2 rounded-talon-sm border-2 border-tinta-15 bg-papel-alto px-4 focus-within:border-anil", className].filter(Boolean).join(" ")}>
-      {prefijo && <span className="font-mono text-2xl text-tinta-45">{prefijo}</span>}
+      {prefijo && <span className="cifra text-2xl text-tinta-45">{prefijo}</span>}
       <input
         inputMode="numeric"
         className="h-16 min-w-0 flex-1 bg-transparent cifra text-4xl outline-none placeholder:text-tinta-15"

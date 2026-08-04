@@ -92,7 +92,7 @@ export function CampanaIniciada({
       <div className="mt-4 rounded-talon bg-tinta px-6 py-5 text-papel">
         <div className="flex items-baseline justify-between">
           <span className="cifra text-4xl">S/ 0</span>
-          <span className="font-mono text-sm text-tinta-15">
+          <span className="cifra text-sm text-tinta-15">
             {meta ? `de ${moneyCorto(meta)}` : `hasta ${moneyCorto(maximo)}`}
           </span>
         </div>

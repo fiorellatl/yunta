@@ -24,6 +24,8 @@ export default async function CampanaPublicaPage({
   const dias = fecha
     ? Math.max(0, Math.ceil((fecha.getTime() - Date.now()) / 86400000))
     : null;
+  // Solo el primer nombre: "María" es una persona, "María Quispe Huamán" es un registro.
+  const primerNombre = c.organizador.trim().split(" ")[0] || "El organizador";
 
   return (
     <main className="mx-auto max-w-md px-5 pb-32 pt-6">
@@ -48,8 +50,8 @@ export default async function CampanaPublicaPage({
         />
       </div>
 
-      <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-anil">
-        Campaña de {c.organizador}
+      <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-cochinilla">
+        {primerNombre} está juntando para
       </p>
       <h1 className="mt-2 text-[clamp(1.9rem,6.5vw,2.6rem)]">{c.goal_title}</h1>
 
@@ -62,6 +64,14 @@ export default async function CampanaPublicaPage({
           vendidos={c.vendidos.length}
           cantidad={c.total_numbers}
         />
+
+        {c.apoyos > 0 && (
+          <p className="mt-4 border-t border-tinta-15 pt-4 text-sm">
+            <span className="cifra text-lg">{c.apoyos}</span>{" "}
+            {c.apoyos === 1 ? "persona ya se sumó" : "personas ya se sumaron"}
+            {c.apoyos >= 3 && <span className="text-tinta-45"> · súmate tú</span>}
+          </p>
+        )}
       </div>
 
       {/* 3 · La historia */}
@@ -90,41 +100,49 @@ export default async function CampanaPublicaPage({
         </section>
       )}
 
-      {/* 5 · Confianza */}
-      <section className="mt-10 rounded-talon bg-tinta px-6 py-7 text-papel">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-tara">
-          Sorteo verificable
-        </p>
-        <h2 className="mt-3 text-xl text-papel">
-          El resultado no depende de la palabra de nadie.
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-tinta-15">
-          Cuando esta campaña se publicó, Yunta selló un código y lo dejó a la vista.
-          El día del sorteo se revela y con él se calcula el número ganador.
-          Cualquiera puede rehacer la cuenta.
-        </p>
-        {c.seed_hash && (
-          <p className="mt-4 break-all font-mono text-xs text-tara">{c.seed_hash}</p>
-        )}
+      {/* 5 · Quién está detrás. Una cara, no una etiqueta. */}
+      <section className="mt-12 overflow-hidden rounded-talon border-2 border-tinta-15 bg-papel-alto">
+        <Franja alto={7} />
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cochinilla-suave font-display text-2xl font-extrabold text-cochinilla">
+              {primerNombre.charAt(0).toUpperCase()}
+            </span>
+            <div className="min-w-0">
+              <p className="text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+                Detrás de esta campaña
+              </p>
+              <p className="mt-1 font-display text-2xl font-bold tracking-tight">
+                {primerNombre}
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-5 leading-relaxed text-tinta-70">
+            {primerNombre} puso la cara por esta causa: organiza la rifa, entrega los
+            premios y responde por ella. Tu plata le llega directo a su Yape —
+            Yunta no la toca ni se queda con nada.
+          </p>
+        </div>
       </section>
 
-      <section className="mt-8 rounded-talon border border-tinta-15 bg-papel-alto p-5">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-anil-suave font-display text-lg font-bold text-anil">
-            {c.organizador.charAt(0)}
-          </span>
-          <div className="min-w-0">
-            <p className="font-medium">{c.organizador}</p>
-            <p className="text-sm text-tinta-45">
-              {c.organizadorVerificado ? "Identidad verificada" : "Sin verificar"}
-            </p>
-          </div>
-        </div>
-        <p className="mt-4 text-sm leading-relaxed text-tinta-70">
-          Esta campaña la organiza y responde {c.organizador}. Tu pago va directo a su
-          Yape: Yunta no recibe ni retiene el dinero.{" "}
-          <Link href="/legal/terminos" className="text-anil underline underline-offset-4">
-            Cómo funciona
+      {/* La letra no tan chica: al final, para quien quiera saber cómo */}
+      <section className="mt-10 border-t border-tinta-15 pt-6">
+        <h2 className="text-base font-semibold">Y el sorteo no lo decide nadie</h2>
+        <p className="mt-2 text-sm leading-relaxed text-tinta-45">
+          Al publicar esta campaña se guardó un código sellado que ya no se puede
+          cambiar. El día del sorteo se destapa, y de ese código sale el número
+          ganador. Si quieres, después puedes rehacer la cuenta tú mismo y comprobar
+          que salió así.
+        </p>
+        {c.seed_hash && (
+          <p className="mt-3 break-all font-mono text-[0.65rem] text-tinta-15">
+            {c.seed_hash}
+          </p>
+        )}
+        <p className="mt-4 text-sm text-tinta-45">
+          <Link href="/legal/terminos" className="underline underline-offset-4 hover:text-tinta">
+            Cómo funciona Yunta
           </Link>
         </p>
       </section>

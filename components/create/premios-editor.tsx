@@ -65,7 +65,7 @@ export function PremiosEditor({
             key={i}
             className="flex items-center gap-3 rounded-talon-sm border-2 border-tinta-15 bg-papel-alto p-2"
           >
-            <span className="w-10 shrink-0 text-center font-mono text-sm text-anil">
+            <span className="cifra w-10 shrink-0 text-center text-sm text-anil">
               {ordinal(i + 1)}
             </span>
 
@@ -84,7 +84,11 @@ export function PremiosEditor({
                 className="sr-only"
                 onChange={(e) => {
                   const archivo = e.target.files?.[0];
-                  if (archivo) editar(i, { fotoPreview: URL.createObjectURL(archivo) });
+                  if (archivo)
+                    editar(i, {
+                      fotoPreview: URL.createObjectURL(archivo),
+                      fotoArchivo: archivo,
+                    });
                 }}
               />
               <span className="sr-only">Foto del {ordinal(i + 1)} premio</span>
@@ -115,7 +119,9 @@ export function PremiosEditor({
       <div className="mt-3 flex flex-wrap gap-4">
         <button
           type="button"
-          onClick={() => onCambiar([...premios, { nombre: "", fotoPreview: null }])}
+          onClick={() =>
+            onCambiar([...premios, { nombre: "", fotoPreview: null, fotoArchivo: null }])
+          }
           className="text-sm font-medium text-anil"
         >
           + Agregar otro premio

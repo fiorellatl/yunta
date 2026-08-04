@@ -7,7 +7,9 @@ import { Input, InputCifra } from "@/components/ui/input";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { PremiosEditor } from "@/components/create/premios-editor";
 import { CampanaIniciada } from "@/components/create/campana-iniciada";
+import { Franja } from "@/components/campaign/franja";
 import { publicarCampana } from "@/lib/actions/campaigns";
+import { subirImagen } from "@/lib/supabase/storage";
 import {
   BORRADOR_VACIO,
   PASOS,
@@ -78,12 +80,27 @@ export default function NuevaCampanaPage() {
     setPublicando(true);
     setError(null);
 
+    // Las fotos viven como URLs locales hasta acá; se suben recién ahora,
+    // cuando ya sabemos que la campaña se va a publicar de verdad.
+    const portadaUrl = b.portadaArchivo
+      ? await subirImagen(b.portadaArchivo, "campaign-covers")
+      : null;
+
+    const premiosConFoto = await Promise.all(
+      premios.map(async (p, i) => ({
+        nombre: p.nombre.trim(),
+        posicion: i + 1,
+        fotoUrl: p.fotoArchivo ? await subirImagen(p.fotoArchivo, "prize-images") : null,
+      })),
+    );
+
     const resultado = await publicarCampana({
       causa: b.causa.trim(),
       meta: b.meta,
       precio: b.precio,
       cantidad: b.cantidad,
-      premios: premios.map((p, i) => ({ nombre: p.nombre.trim(), posicion: i + 1 })),
+      premios: premiosConFoto,
+      portadaUrl,
       fechaSorteo: b.fechaSorteo,
       yape: b.yape,
       titular: b.titular.trim(),
@@ -260,14 +277,18 @@ export default function NuevaCampanaPage() {
               className="sr-only"
               onChange={(e) => {
                 const archivo = e.target.files?.[0];
-                if (archivo) set({ portadaFoto: URL.createObjectURL(archivo) });
+                if (archivo)
+                  set({
+                    portadaFoto: URL.createObjectURL(archivo),
+                    portadaArchivo: archivo,
+                  });
               }}
             />
           </label>
           {b.portadaFoto && (
             <button
               type="button"
-              onClick={() => set({ portadaFoto: null })}
+              onClick={() => set({ portadaFoto: null, portadaArchivo: null })}
               className="text-sm font-medium text-tinta-45 hover:text-tinta"
             >
               Usar la portada de Yunta
@@ -375,7 +396,7 @@ export default function NuevaCampanaPage() {
               <ol className="mt-2 space-y-1">
                 {premios.map((p, i) => (
                   <li key={i} className="flex gap-3 text-sm">
-                    <span className="w-10 shrink-0 font-mono text-anil">
+                    <span className="cifra w-10 shrink-0 text-anil">
                       {ordinal(i + 1)}
                     </span>
                     <span className="min-w-0 truncate">{p.nombre}</span>
@@ -491,53 +512,98 @@ export default function NuevaCampanaPage() {
       puedeAvanzar={puede && !publicando}
       onAvanzar={publicar}
     >
-      <div className="troquel border border-tinta-15 p-5">
-        <PortadaCampana
-          causa={b.causa}
-          meta={b.meta}
-          foto={b.portadaFoto}
-          paleta={b.portadaPaleta ?? undefined}
-        />
+      {/* Ticket de rifa: portada arriba, premios al centro, talón abajo */}
+      <div className="overflow-hidden rounded-talon border-2 border-tinta bg-papel-alto">
+        <Franja alto={9} />
 
-        <div className="mt-5 flex items-center justify-between rounded-talon-sm bg-anil-suave px-4 py-3">
-          <span className="text-sm text-tinta-70">Cada número</span>
-          <span className="cifra text-2xl">{money(b.precio ?? 0)}</span>
+        <div className="p-4">
+          <PortadaCampana
+            causa={b.causa}
+            meta={b.meta}
+            foto={b.portadaFoto}
+            paleta={b.portadaPaleta ?? undefined}
+          />
+
+          {/* Collage de premios */}
+          <p className="mt-5 text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+            {premios.length === 1 ? "El premio" : `${premios.length} premios`}
+          </p>
+          <ul className="mt-2 grid grid-cols-2 gap-2">
+            {premios.map((p, i) => (
+              <li
+                key={i}
+                className={[
+                  "overflow-hidden rounded-talon-sm border-2",
+                  i === 0 ? "col-span-2 border-tara" : "border-tinta-15",
+                ].join(" ")}
+              >
+                <div
+                  className={[
+                    "relative w-full bg-tara-suave",
+                    i === 0 ? "aspect-[16/7]" : "aspect-[4/3]",
+                  ].join(" ")}
+                >
+                  {p.fotoPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.fotoPreview}
+                      alt={p.nombre}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center px-3 text-center">
+                      <span className="cifra text-sm uppercase leading-tight">
+                        {p.nombre}
+                      </span>
+                    </span>
+                  )}
+                  <span className="absolute left-1.5 top-1.5 rounded bg-tinta px-1.5 py-0.5 text-[0.6rem] font-bold uppercase text-papel">
+                    {ordinal(i + 1)}
+                  </span>
+                </div>
+                {p.fotoPreview && (
+                  <p className="truncate px-2 py-1.5 text-xs font-medium">{p.nombre}</p>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="linea-corte my-5" />
+        {/* El talón: perforación y datos duros, como el pie de un boleto */}
+        <div className="linea-corte" />
+        <div className="bg-papel p-4">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+                Cada número
+              </p>
+              <p className="cifra text-3xl">{money(b.precio ?? 0)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+                Sorteo
+              </p>
+              <p className="cifra text-sm">
+                {b.fechaSorteo && fechaLarga(new Date(`${b.fechaSorteo}T12:00:00`))}
+              </p>
+            </div>
+          </div>
 
-        <h3 className="text-sm font-medium">
-          {premios.length === 1 ? "El premio" : "Los premios"}
-        </h3>
-        <ol className="mt-2 space-y-1">
-          {premios.map((p, i) => (
-            <li key={i} className="flex gap-3 text-sm">
-              <span className="w-10 shrink-0 font-mono text-anil">{ordinal(i + 1)}</span>
-              <span className="min-w-0 truncate">{p.nombre}</span>
-            </li>
-          ))}
-        </ol>
-
-        <dl className="mt-5 space-y-1 border-t border-tinta-15 pt-4 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-tinta-70">Números</dt>
-            <dd className="font-mono">{b.cantidad}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-tinta-70">Sorteo</dt>
-            <dd className="font-mono">
-              {b.fechaSorteo && fechaLarga(new Date(`${b.fechaSorteo}T12:00:00`))}
-            </dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-tinta-70">Te pagan al</dt>
-            <dd className="font-mono">{formatearTelefono(b.yape)}</dd>
-          </div>
-          <div className="flex justify-between pt-1">
-            <dt className="font-medium">Si vendes todo</dt>
-            <dd className="cifra text-chilca">{moneyCorto(total ?? 0)}</dd>
-          </div>
-        </dl>
+          <dl className="mt-4 space-y-1 border-t border-tinta-15 pt-3 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-tinta-70">Números</dt>
+              <dd className="cifra">{b.cantidad}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-tinta-70">Te pagan al</dt>
+              <dd className="cifra">{formatearTelefono(b.yape)}</dd>
+            </div>
+            <div className="flex justify-between pt-1">
+              <dt className="font-medium">Si vendes todo</dt>
+              <dd className="cifra text-chilca">{moneyCorto(total ?? 0)}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
       {/* Lo que deja de ser su problema apenas publique */}

@@ -70,7 +70,7 @@ export function PasoPregunta({
             ))}
           </div>
 
-          <span className="font-mono text-xs text-tinta-45 tabular-nums">
+          <span className="cifra text-xs text-tinta-45">
             {indice + 1}/{total}
           </span>
         </div>

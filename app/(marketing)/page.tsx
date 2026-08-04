@@ -239,16 +239,27 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-5xl px-5 pb-24">
-        <div className="rounded-talon border border-tinta-15 bg-papel-alto px-7 py-12 text-center">
-          <h2 className="text-[clamp(1.8rem,4vw,2.6rem)]">¿Cuál es tu causa?</h2>
-          <p className="mx-auto mt-4 max-w-md leading-relaxed text-tinta-70">
-            Cuéntala en dos minutos y compártela hoy mismo.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <ButtonLink href="/app/nueva" tamano="lg">
-              Empieza tu campaña
-            </ButtonLink>
+        <div className="overflow-hidden rounded-talon bg-tinta text-papel">
+          <Franja alto={10} />
+          <div className="px-7 py-14 text-center">
+            <h2 className="text-[clamp(1.9rem,4.5vw,3rem)] text-papel">
+              ¿Cuál es tu causa?
+            </h2>
+            <p className="mx-auto mt-4 max-w-md leading-relaxed text-tinta-15">
+              Cuéntala en dos minutos y compártela hoy mismo. Lo demás lo ponemos
+              nosotros.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <ButtonLink
+                href="/app/nueva"
+                tamano="lg"
+                className="bg-tara text-tinta shadow-[0_2px_0_0_#a8760f] hover:bg-[#f2b02a]"
+              >
+                Empieza tu campaña
+              </ButtonLink>
+            </div>
           </div>
+          <Franja alto={10} />
         </div>
       </section>
 
