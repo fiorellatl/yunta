@@ -152,7 +152,7 @@ export function CampanaIniciada({
           })}
         </ul>
 
-        <p className="mt-4 text-center font-mono text-sm text-tinta-45">
+        <p className="mt-4 text-center text-sm text-tinta-45">
           {enviados.length === DESTINATARIOS.length
             ? "Ya la mandaste a los tres. Ahora te toca esperar los pagos."
             : `${enviados.length} de ${DESTINATARIOS.length} enviados`}

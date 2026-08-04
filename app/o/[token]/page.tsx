@@ -32,7 +32,20 @@ export default function EstadoOrdenPage({
 
   const [etapa, setEtapa] = useState(1);
   const [origen, setOrigen] = useState("");
+  const [copiado, setCopiado] = useState(false);
   useEffect(() => setOrigen(window.location.origin), []);
+
+  const enlaceOrden = `${origen}/o/${token}`;
+
+  async function copiarOrden() {
+    try {
+      await navigator.clipboard.writeText(enlaceOrden);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      /* el enlace está a la vista: se puede seleccionar a mano */
+    }
+  }
 
   const enlace = `${origen}/r/${c.slug}`;
   const mensaje = `Acabo de apoyar ${c.causa.toLowerCase()} con ${numeros.length} ${numeros.length === 1 ? "número" : "números"}. Si puedes, súmate tú también: ${enlace}`;
@@ -79,7 +92,7 @@ export default function EstadoOrdenPage({
         </p>
 
         <p className="mt-4 text-sm text-tinta-70">
-          Aportaste <span className="font-mono font-medium">{money(total)}</span> · sorteo
+          Aportaste <span className="cifra">{money(total)}</span> · sorteo
           el {fechaLarga(new Date(`${c.fechaSorteo}T12:00:00`))}
         </p>
       </section>
@@ -154,11 +167,25 @@ export default function EstadoOrdenPage({
         </a>
       </section>
 
-      <div className="mt-8 rounded-talon-sm bg-anil-suave p-4">
-        <p className="text-sm leading-relaxed text-tinta-70">
-          Guarda este link para volver a ver el estado de tus números. También te lo
-          mandamos por WhatsApp.
+      {/* "Guarda este link" no decía cuál: ahora está a la vista y se copia. */}
+      <div className="mt-8 rounded-talon border-2 border-tinta-15 bg-papel-alto p-4">
+        <p className="text-sm font-medium">Para volver a ver tus números</p>
+        <p className="mt-1 text-sm leading-relaxed text-tinta-70">
+          Esta página es tuya. Guárdala y vuelve cuando quieras a ver si tu pago ya
+          fue confirmado.
         </p>
+        <div className="mt-3 flex items-center gap-2 rounded-talon-sm bg-papel px-3 py-2">
+          <span className="min-w-0 flex-1 truncate font-mono text-xs text-tinta-70">
+            {enlaceOrden}
+          </span>
+          <button
+            type="button"
+            onClick={copiarOrden}
+            className="shrink-0 text-sm font-medium text-anil"
+          >
+            {copiado ? "Copiado" : "Copiar"}
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 flex justify-center gap-6 text-sm">

@@ -185,7 +185,7 @@ export default function NuevaCampanaPage() {
           sugerido && (
             <p>
               Con esa meta te alcanza con{" "}
-              <span className="font-mono font-medium">
+              <span className="cifra">
                 {sugerido.cantidad} números a {moneyCorto(sugerido.precio)}
               </span>
               . Lo armamos en el siguiente paso.
@@ -486,7 +486,7 @@ export default function NuevaCampanaPage() {
           value={formatearTelefono(b.yape)}
           onChange={(e) => set({ yape: e.target.value.replace(/\D/g, "").slice(0, 9) })}
           placeholder="987 654 321"
-          className="font-mono tabular-nums"
+          className="cifra"
           aria-label="Número de Yape o Plin"
         />
         <label className="mt-4 block">

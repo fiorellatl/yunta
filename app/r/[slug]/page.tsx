@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortadaCampana } from "@/components/create/portada-campana";
@@ -7,6 +8,31 @@ import { Podio } from "@/components/campaign/podio";
 import { Franja } from "@/components/campaign/franja";
 import { obtenerCampana } from "@/lib/data/campanas";
 import { fechaLarga, money } from "@/lib/format";
+
+/** Lo que se lee bajo la imagen cuando alguien pega el enlace en un chat. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const c = await obtenerCampana(slug);
+
+  if (!c) return { title: "Campaña no encontrada · Yunta" };
+
+  const precio = money(Number(c.price_per_number));
+  const nombre = c.organizador.trim().split(" ")[0];
+
+  return {
+    title: `${c.goal_title} · Yunta`,
+    description: `${nombre} está juntando para ${c.goal_title.toLowerCase()}. Cada número cuesta ${precio} y entra al sorteo. Elige el tuyo.`,
+    openGraph: {
+      title: c.goal_title,
+      description: `Cada número cuesta ${precio}. Súmate a la causa de ${nombre}.`,
+      type: "website",
+    },
+  };
+}
 
 export default async function CampanaPublicaPage({
   params,
@@ -34,7 +60,7 @@ export default async function CampanaPublicaPage({
           Yunta
         </Link>
         {dias !== null && (
-          <span className="font-mono text-xs text-tinta-45">
+          <span className="cifra text-xs text-tinta-45">
             {dias === 0 ? "sortea hoy" : dias === 1 ? "falta 1 día" : `faltan ${dias} días`}
           </span>
         )}

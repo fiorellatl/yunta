@@ -72,7 +72,7 @@ export default async function MisCampanasPage() {
                           : "Nada pendiente por revisar"}
                       </span>
                     )}
-                    <span className="shrink-0 font-mono text-sm text-tinta-45">
+                    <span className="cifra shrink-0 text-sm text-tinta-45">
                       {c.reservados > 0 && `${c.reservados} separados · `}
                       {moneyCorto(precio)}
                     </span>

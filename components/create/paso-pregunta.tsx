@@ -42,19 +42,26 @@ export function PasoPregunta({
     >
       <header className="px-5 pt-5">
         <div className="flex items-center gap-3">
+          {/* Con la flecha sola nadie sabía que se podía volver: lleva palabra. */}
           {onAtras ? (
             <button
               type="button"
               onClick={onAtras}
-              className="-ml-2 flex h-9 w-9 items-center justify-center rounded-talon-sm text-tinta-45 hover:bg-anil-suave hover:text-tinta"
-              aria-label="Volver a la pregunta anterior"
+              className="-ml-2 flex h-9 shrink-0 items-center gap-1 rounded-talon-sm px-2 text-sm font-medium text-tinta-45 hover:bg-anil-suave hover:text-tinta"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M15 5l-7 7 7 7"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
+              Atrás
             </button>
           ) : (
-            <span className="h-9 w-9" />
+            <span className="h-9 w-10" />
           )}
 
           {/* El avance se lee como talones que se van llenando */}
