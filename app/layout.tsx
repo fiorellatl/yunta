@@ -39,6 +39,14 @@ const cifras = Archivo({
 });
 
 export const metadata: Metadata = {
+  /**
+   * Sin esto, Next emite la URL de la imagen de vista previa en forma
+   * relativa y WhatsApp, Instagram y Facebook no pueden resolverla:
+   * el enlace se pega sin imagen.
+   */
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://yuntaz.netlify.app",
+  ),
   title: "Yunta · Toda causa merece una oportunidad",
   description:
     "Crea tu campaña, compártela por WhatsApp y recauda con total transparencia. El dinero llega directo a tu Yape.",

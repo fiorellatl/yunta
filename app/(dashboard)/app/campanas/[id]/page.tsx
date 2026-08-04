@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BarraMeta } from "@/components/campaign/barra-meta";
-import { GrillaNumeros } from "@/components/campaign/grilla-numeros";
+import { GrillaLectura } from "@/components/campaign/grilla-lectura";
 import { BandejaOrdenes } from "@/components/admin/bandeja-ordenes";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { campanaDelOrganizador } from "@/lib/data/campanas";
 import { diasHasta, fechaLarga, moneyCorto } from "@/lib/format";
-import type { NumberStatus } from "@/types/database";
-
-const ESTADO: Record<NumberStatus, "disponible" | "reservado" | "vendido"> = {
-  available: "disponible",
-  reserved: "reservado",
-  sold: "vendido",
-};
 
 export default async function PanelCampanaPage({
   params,
@@ -32,9 +25,6 @@ export default async function PanelCampanaPage({
   const dias = campana.draw_date
     ? diasHasta(campana.draw_date.slice(0, 10))
     : null;
-
-  const mapa = new Map(numeros.map((n) => [n.number, n.status]));
-  const estadoDe = (n: number) => ESTADO[mapa.get(n) ?? "available"];
 
   return (
     <main className="mx-auto max-w-md px-5 pb-16 pt-6">
@@ -124,7 +114,7 @@ export default async function PanelCampanaPage({
         </div>
 
         <div className="mt-4">
-          <GrillaNumeros cantidad={campana.total_numbers} estadoDe={estadoDe} />
+          <GrillaLectura cantidad={campana.total_numbers} numeros={numeros} />
         </div>
       </section>
 
