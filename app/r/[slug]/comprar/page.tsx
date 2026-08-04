@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { GrillaNumeros } from "@/components/campaign/grilla-numeros";
 import { TiraCausa } from "@/components/campaign/tira-causa";
+import { NumberStub } from "@/components/raffle/number-stub";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { campanaDemo, estadoNumero, recaudado } from "@/lib/mock/campana";
@@ -158,9 +159,9 @@ export default function ComprarPage({
         <button
           type="button"
           onClick={sorprendeme}
-          className="ml-auto font-medium text-anil"
+          className="ml-auto rounded-talon-sm border-2 border-anil px-3 py-1.5 text-sm font-semibold text-anil transition-colors hover:bg-anil-suave"
         >
-          Sorpréndeme
+          Que la suerte elija
         </button>
       </div>
 
@@ -182,21 +183,40 @@ export default function ComprarPage({
 
       <div className="fixed inset-x-0 bottom-0 border-t border-tinta-15 bg-papel/95 backdrop-blur">
         <div className="mx-auto max-w-md px-5 py-4">
-          {/* El eco del comprador: qué logra con lo que acaba de elegir */}
           {elegidos.length > 0 ? (
-            <p className="mb-3 text-sm">
-              Con {elegidos.length} {elegidos.length === 1 ? "número" : "números"} aportas{" "}
-              <span className="font-mono font-medium">{money(total)}</span> —{" "}
-              <span className="text-chilca">{aporte}% de la meta</span>
-              {faltaParaMeta > 0 && (
-                <span className="text-tinta-45">
-                  , y quedarían {moneyCorto(faltaParaMeta)} por juntar
+            <>
+              {/* Los números elegidos, a la vista: son suyos */}
+              <div className="mb-3 flex items-center gap-2">
+                <span className="shrink-0 text-[0.7rem] font-bold uppercase tracking-wider text-tinta-45">
+                  Tuyos
                 </span>
-              )}
-            </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[...elegidos].sort((a, b) => a - b).map((n) => (
+                    <span key={n} className="animate-talon w-10">
+                      <NumberStub
+                        numero={n}
+                        seleccionado
+                        digitos={String(c.cantidad).length}
+                      />
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Y qué logra con ellos */}
+              <p className="mb-3 text-sm">
+                Aportas <span className="cifra">{money(total)}</span> —{" "}
+                <span className="text-chilca">{aporte}% de la meta</span>
+                {faltaParaMeta > 0 && (
+                  <span className="text-tinta-45">
+                    , faltarían {moneyCorto(faltaParaMeta)}
+                  </span>
+                )}
+              </p>
+            </>
           ) : (
             <p className="mb-3 text-sm text-tinta-45">
-              Toca los números que quieras llevar.
+              Toca el número que quieras. Si te da igual, deja que la suerte elija.
             </p>
           )}
 

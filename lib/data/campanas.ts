@@ -1,6 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Campaign, NumberStatus, Prize } from "@/types/database";
 
+/**
+ * Sin credenciales no hay base: en vez de reventar con un 500, las pantallas
+ * muestran su estado vacío. Un despliegue a medio configurar no debería
+ * tumbar la demo entera.
+ */
+function hayBase() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
+}
+
 export type CampanaConDatos = Campaign & {
   prizes: Prize[];
   organizador: string;
@@ -16,6 +28,7 @@ export type CampanaConDatos = Campaign & {
  * filtran, esto solo evita renderizar media página vacía.
  */
 export async function obtenerCampana(slug: string): Promise<CampanaConDatos | null> {
+  if (!hayBase()) return null;
   const supabase = await createClient();
 
   const { data: campana } = await supabase
@@ -55,6 +68,7 @@ export async function obtenerCampana(slug: string): Promise<CampanaConDatos | nu
 
 /** Las campañas del organizador que tiene la sesión abierta. */
 export async function misCampanas() {
+  if (!hayBase()) return [];
   const supabase = await createClient();
   const {
     data: { user },
@@ -91,7 +105,7 @@ export async function misCampanas() {
 
 /** Órdenes esperando revisión, para el aviso del panel. */
 export async function ordenesPendientes(campaignIds: string[]) {
-  if (!campaignIds.length) return {} as Record<string, number>;
+  if (!campaignIds.length || !hayBase()) return {} as Record<string, number>;
 
   const supabase = await createClient();
   const { data } = await supabase

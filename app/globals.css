@@ -157,6 +157,17 @@
   .ritmo > i:nth-child(4n + 3) { height: 70%; }
   .ritmo > i:nth-child(4n + 4) { height: 40%; }
 
+  /* ── Cifra ──
+     Los números de una rifa y los montos van en la display, no en mono:
+     una monoespaciada dice "código", y acá el número es el protagonista
+     emocional. Tabular para que no bailen al actualizarse. */
+  .cifra {
+    font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+
   /* Sello: etiqueta de estado en vocabulario de imprenta. */
   .sello {
     font-family: var(--font-tecnica), monospace;
@@ -179,6 +190,25 @@
     opacity: 1;
     transform: rotate(-9deg) scale(1);
   }
+}
+
+/* Al elegir un número, el talón salta: el gesto tiene que sentirse. */
+@keyframes salto-talon {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-6deg);
+  }
+  60% {
+    transform: scale(1.12) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+.animate-talon {
+  animation: salto-talon 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.5) both;
 }
 
 .animate-sello {

@@ -27,7 +27,7 @@ export function BarraMeta({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
-        <span className="font-mono text-3xl font-medium tabular-nums">
+        <span className="cifra text-4xl">
           {moneyCorto(recaudado)}
         </span>
         <span className={`font-mono text-sm ${oscuro ? "text-tinta-15" : "text-tinta-45"}`}>

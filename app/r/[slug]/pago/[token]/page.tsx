@@ -66,7 +66,7 @@ export default function PagoPage({
             </div>
           </div>
           <span className="shrink-0 text-right">
-            <span className="block font-mono text-2xl font-medium tabular-nums">
+            <span className="block cifra text-3xl">
               {mm}:{ss}
             </span>
             <span className="block text-xs text-tinta-70">para pagar</span>
@@ -85,7 +85,7 @@ export default function PagoPage({
           Yape o Plin
         </p>
         <div className="mt-2 flex items-center justify-between gap-3">
-          <span className="font-mono text-2xl font-medium tabular-nums">
+          <span className="cifra text-3xl">
             {formatearTelefono(c.yape)}
           </span>
           <button
@@ -111,7 +111,7 @@ export default function PagoPage({
           </div>
           <div className="flex justify-between pt-1">
             <dt className="font-medium">Total a yapear</dt>
-            <dd className="font-mono text-lg font-medium">{money(total)}</dd>
+            <dd className="cifra text-xl">{money(total)}</dd>
           </div>
         </dl>
       </div>

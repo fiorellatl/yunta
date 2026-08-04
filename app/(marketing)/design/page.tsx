@@ -234,7 +234,7 @@ export default function SistemaVisualPage() {
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-tinta-45">
               Datos · Geist Mono
             </p>
-            <p className="mt-3 font-mono text-3xl tabular-nums">S/ 2,000 · 087 · YT-4KQ2</p>
+            <p className="mt-3 cifra text-4xl">S/ 2,000 · 087 · YT-4KQ2</p>
             <p className="mt-3 text-sm text-tinta-70">
               Todo lo que es cifra: montos, números de rifa, códigos, fechas cortas,
               cuentas regresivas. Siempre <code className="font-mono">tabular-nums</code>{" "}

@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { BarraMeta } from "@/components/campaign/barra-meta";
 import { ButtonLink } from "@/components/ui/button";
+import { Podio } from "@/components/campaign/podio";
+import { Franja } from "@/components/campaign/franja";
 import { obtenerCampana } from "@/lib/data/campanas";
-import { ordinal } from "@/lib/domain/campana";
 import { fechaLarga, money } from "@/lib/format";
 
 export default async function CampanaPublicaPage({
@@ -39,7 +40,12 @@ export default async function CampanaPublicaPage({
 
       {/* 1 · La causa, antes que nada */}
       <div className="mt-6">
-        <PortadaCampana causa={c.goal_title} meta={meta} foto={c.cover_url} />
+        <PortadaCampana
+          causa={c.goal_title}
+          meta={meta}
+          foto={c.cover_url}
+          paleta={c.cover_palette}
+        />
       </div>
 
       <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-anil">
@@ -65,29 +71,22 @@ export default async function CampanaPublicaPage({
         </section>
       )}
 
-      {/* 4 · Recién ahora, el incentivo */}
+      {/* 4 · Recién ahora, el incentivo — pero con todo su peso visual */}
       {c.prizes.length > 0 && (
-        <section className="mt-10">
-          <h2 className="text-2xl">Además, puedes ganarte esto</h2>
+        <section className="mt-12">
+          <Franja alto={6} className="rounded-full" />
+          <h2 className="mt-5 text-[clamp(1.7rem,5.5vw,2.2rem)]">
+            {c.prizes.length === 1 ? "Y esto te puedes ganar" : "Y esto se sortea"}
+          </h2>
           {fecha && (
             <p className="mt-2 text-sm text-tinta-70">
-              Cada número que compras entra al sorteo del {fechaLarga(fecha)}.
+              Cada número entra al sorteo del {fechaLarga(fecha)}.
             </p>
           )}
 
-          <ol className="mt-5 space-y-2">
-            {c.prizes.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center gap-4 rounded-talon-sm border-2 border-tinta-15 bg-papel-alto p-4"
-              >
-                <span className="w-10 shrink-0 font-mono text-sm text-anil">
-                  {ordinal(p.position)}
-                </span>
-                <span className="min-w-0 flex-1">{p.name}</span>
-              </li>
-            ))}
-          </ol>
+          <div className="mt-5">
+            <Podio premios={c.prizes} />
+          </div>
         </section>
       )}
 
@@ -134,7 +133,7 @@ export default async function CampanaPublicaPage({
       <div className="fixed inset-x-0 bottom-0 border-t border-tinta-15 bg-papel/95 backdrop-blur">
         <div className="mx-auto flex max-w-md items-center gap-3 px-5 py-4">
           <div className="min-w-0">
-            <p className="font-mono text-lg font-medium">{money(precio)}</p>
+            <p className="cifra text-xl">{money(precio)}</p>
             <p className="text-xs text-tinta-45">por número</p>
           </div>
           <ButtonLink href={`/r/${c.slug}/comprar`} tamano="lg" className="flex-1">

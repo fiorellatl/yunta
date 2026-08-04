@@ -19,6 +19,7 @@ export function CampanaIniciada({
   premios,
   fechaSorteo,
   portadaFoto,
+  portadaPaleta,
 }: {
   slug: string;
   causa: string;
@@ -28,6 +29,7 @@ export function CampanaIniciada({
   premios: number;
   fechaSorteo: string;
   portadaFoto: string | null;
+  portadaPaleta?: number | null;
 }) {
   const [copiado, setCopiado] = useState(false);
   const [fallo, setFallo] = useState(false);
@@ -78,13 +80,18 @@ export function CampanaIniciada({
       </h1>
 
       <div className="mt-6">
-        <PortadaCampana causa={causa} meta={meta} foto={portadaFoto} />
+        <PortadaCampana
+          causa={causa}
+          meta={meta}
+          foto={portadaFoto}
+          paleta={portadaPaleta ?? undefined}
+        />
       </div>
 
       {/* El marcador: arranca en cero, y eso es lo que da ganas de compartir */}
       <div className="mt-4 rounded-talon bg-tinta px-6 py-5 text-papel">
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-3xl font-medium tabular-nums">S/ 0</span>
+          <span className="cifra text-4xl">S/ 0</span>
           <span className="font-mono text-sm text-tinta-15">
             {meta ? `de ${moneyCorto(meta)}` : `hasta ${moneyCorto(maximo)}`}
           </span>

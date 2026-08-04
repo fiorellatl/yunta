@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { PortadaCampana } from "@/components/create/portada-campana";
 import { BarraMeta } from "@/components/campaign/barra-meta";
+import { Franja } from "@/components/campaign/franja";
 
 const PASOS = [
   {
@@ -18,6 +19,29 @@ const PASOS = [
     titulo: "Recibe y confirma",
     texto:
       "El dinero llega directo a tu cuenta. Tú apruebas cada pago y todos ven cómo avanza la meta.",
+  },
+];
+
+const SEGUIMIENTO = [
+  {
+    titulo: "Ningún número se vende dos veces",
+    texto:
+      "Apenas alguien elige el suyo, queda bloqueado para el resto. No hay forma de que dos personas terminen con el mismo.",
+  },
+  {
+    titulo: "Los pagos te llegan ordenados",
+    texto:
+      "Cada comprobante aparece en tu bandeja con el nombre, el monto y los números. Apruebas con un toque y quedan asignados.",
+  },
+  {
+    titulo: "El avance está siempre al día",
+    texto:
+      "Cuánto llevas juntado, cuántos números quedan libres y quién todavía no paga. Sin cuadernos ni listas aparte.",
+  },
+  {
+    titulo: "El sorteo se hace solo",
+    texto:
+      "Llegada la fecha, Yunta elige al ganador y publica la prueba para que cualquiera la verifique. Tú solo avisas.",
   },
 ];
 
@@ -121,6 +145,31 @@ export default function Home() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Lo que le quitamos de encima al organizador */}
+      <section className="mx-auto max-w-5xl px-5 py-16">
+        <Franja alto={7} className="rounded-full" />
+        <h2 className="mt-6 text-[clamp(1.9rem,4vw,2.75rem)]">
+          Tú compartes. Nosotros llevamos la cuenta.
+        </h2>
+        <p className="mt-4 max-w-xl leading-relaxed text-tinta-70">
+          Organizar una rifa por WhatsApp significa un cuaderno, un Excel y doscientos
+          mensajes preguntando quién pagó. Eso es lo que Yunta hace por ti, solo.
+        </p>
+
+        <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+          {SEGUIMIENTO.map((s) => (
+            <li
+              key={s.titulo}
+              className="rounded-talon border border-tinta-15 bg-papel-alto p-5"
+            >
+              <span className="sello text-chilca text-[0.6rem]">Automático</span>
+              <h3 className="mt-3 text-lg">{s.titulo}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-tinta-70">{s.texto}</p>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Confianza */}

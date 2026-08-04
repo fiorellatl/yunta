@@ -11,9 +11,11 @@ import { publicarCampana } from "@/lib/actions/campaigns";
 import {
   BORRADOR_VACIO,
   PASOS,
+  PALETAS,
   comboSugerido,
   contraMeta,
   ordinal,
+  paletaDe,
   pasoCompleto,
   premiosValidos,
   proponerCombos,
@@ -85,6 +87,7 @@ export default function NuevaCampanaPage() {
       fechaSorteo: b.fechaSorteo,
       yape: b.yape,
       titular: b.titular.trim(),
+      portadaPaleta: b.portadaPaleta,
     });
 
     setPublicando(false);
@@ -103,6 +106,7 @@ export default function NuevaCampanaPage() {
         premios={premios.length}
         fechaSorteo={b.fechaSorteo}
         portadaFoto={b.portadaFoto}
+        portadaPaleta={b.portadaPaleta}
       />
     );
   }
@@ -214,7 +218,37 @@ export default function NuevaCampanaPage() {
         ayuda="Una foto de las personas, del equipo, del lugar. Si no tienes una, ya te armamos esta portada."
         textoAvanzar={b.portadaFoto ? "Siguiente" : "Usar esta portada"}
       >
-        <PortadaCampana causa={b.causa} meta={b.meta} foto={b.portadaFoto} />
+        <PortadaCampana
+          causa={b.causa}
+          meta={b.meta}
+          foto={b.portadaFoto}
+          paleta={b.portadaPaleta ?? undefined}
+        />
+
+        {!b.portadaFoto && (
+          <div className="mt-4">
+            <p className="text-sm font-medium">O elige otro color</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PALETAS.map((p, i) => {
+                const activa = (b.portadaPaleta ?? paletaDe(b.causa || "Tu campaña")) === i;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => set({ portadaPaleta: i })}
+                    aria-label={`Portada ${i + 1}`}
+                    aria-pressed={activa}
+                    className={[
+                      "h-10 w-10 rounded-md border-2 transition-transform",
+                      activa ? "border-tinta scale-110" : "border-tinta-15",
+                    ].join(" ")}
+                    style={{ background: p.fondo }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <label className="cursor-pointer text-sm font-medium text-anil">
@@ -260,7 +294,7 @@ export default function NuevaCampanaPage() {
           total && (
             <p>
               Si vendes todo juntas{" "}
-              <span className="font-mono text-xl font-medium">{moneyCorto(total)}</span>
+              <span className="cifra text-2xl">{moneyCorto(total)}</span>
               {balance && balance.diferencia >= 0 && (
                 <span className="mt-1 block text-sm text-tinta-70">
                   {balance.diferencia === 0
@@ -378,7 +412,7 @@ export default function NuevaCampanaPage() {
             <p>
               Tienes <span className="font-medium">{dias} días</span> para vender{" "}
               {b.cantidad} números.
-              <span className="mt-1 block font-mono text-xl font-medium">
+              <span className="mt-1 block cifra text-2xl">
                 {porDia} por día
               </span>
             </p>
@@ -458,11 +492,16 @@ export default function NuevaCampanaPage() {
       onAvanzar={publicar}
     >
       <div className="troquel border border-tinta-15 p-5">
-        <PortadaCampana causa={b.causa} meta={b.meta} foto={b.portadaFoto} />
+        <PortadaCampana
+          causa={b.causa}
+          meta={b.meta}
+          foto={b.portadaFoto}
+          paleta={b.portadaPaleta ?? undefined}
+        />
 
         <div className="mt-5 flex items-center justify-between rounded-talon-sm bg-anil-suave px-4 py-3">
           <span className="text-sm text-tinta-70">Cada número</span>
-          <span className="font-mono text-xl font-medium">{money(b.precio ?? 0)}</span>
+          <span className="cifra text-2xl">{money(b.precio ?? 0)}</span>
         </div>
 
         <div className="linea-corte my-5" />
@@ -496,9 +535,20 @@ export default function NuevaCampanaPage() {
           </div>
           <div className="flex justify-between pt-1">
             <dt className="font-medium">Si vendes todo</dt>
-            <dd className="font-mono font-medium text-chilca">{moneyCorto(total ?? 0)}</dd>
+            <dd className="cifra text-chilca">{moneyCorto(total ?? 0)}</dd>
           </div>
         </dl>
+      </div>
+
+      {/* Lo que deja de ser su problema apenas publique */}
+      <div className="mt-6 rounded-talon bg-anil-suave p-5">
+        <p className="font-medium">Desde que publiques, Yunta lleva la cuenta</p>
+        <ul className="mt-3 space-y-2 text-sm leading-relaxed text-tinta-70">
+          <li>· Bloquea cada número apenas alguien lo elige</li>
+          <li>· Te ordena los comprobantes para que apruebes con un toque</li>
+          <li>· Lleva el avance al día, sin cuaderno ni Excel</li>
+          <li>· Hace el sorteo y publica la prueba</li>
+        </ul>
       </div>
 
       <label className="mt-6 flex items-start gap-3">

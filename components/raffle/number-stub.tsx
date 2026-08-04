@@ -24,7 +24,7 @@ export function NumberStub({
   return (
     <span
       className={[
-        "flex aspect-square items-center justify-center rounded-talon-sm border-2 font-mono text-sm tabular-nums transition-colors",
+        "cifra flex aspect-square items-center justify-center rounded-talon-sm border-2 text-[0.95rem] transition-colors",
         seleccionado
           ? "border-anil bg-anil text-white"
           : estilos[estado],

@@ -17,6 +17,7 @@ type DatosCampana = {
   yape: string;
   titular: string;
   portadaUrl?: string | null;
+  portadaPaleta?: number | null;
 };
 
 /**
@@ -50,7 +51,7 @@ export async function publicarCampana(datos: DatosCampana): Promise<ResultadoPub
       goal_amount: datos.meta,
       cover_source: datos.portadaUrl ? "photo" : "typographic",
       cover_url: datos.portadaUrl ?? null,
-      cover_palette: paletaDe(datos.causa),
+      cover_palette: datos.portadaPaleta ?? paletaDe(datos.causa),
       price_per_number: datos.precio,
       total_numbers: datos.cantidad,
       draw_date: `${datos.fechaSorteo}T20:00:00-05:00`,

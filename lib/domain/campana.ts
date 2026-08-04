@@ -7,6 +7,7 @@ export type BorradorCampana = {
   meta: number | null;        // opcional: puede no saberlo todavía
   metaOmitida: boolean;       // marcó "todavía no lo sé"
   portadaFoto: string | null; // si subió una foto propia
+  portadaPaleta: number | null; // si eligió una portada distinta a la sugerida
   precio: number | null;
   cantidad: number | null;
   premios: Premio[];
@@ -21,6 +22,7 @@ export const BORRADOR_VACIO: BorradorCampana = {
   meta: null,
   metaOmitida: false,
   portadaFoto: null,
+  portadaPaleta: null,
   precio: null,
   cantidad: null,
   premios: [{ nombre: "", fotoPreview: null }],

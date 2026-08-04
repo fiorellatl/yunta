@@ -19,7 +19,7 @@ export function InputCifra({
       {prefijo && <span className="font-mono text-2xl text-tinta-45">{prefijo}</span>}
       <input
         inputMode="numeric"
-        className="h-16 min-w-0 flex-1 bg-transparent font-mono text-3xl tabular-nums outline-none placeholder:text-tinta-15"
+        className="h-16 min-w-0 flex-1 bg-transparent cifra text-4xl outline-none placeholder:text-tinta-15"
         {...props}
       />
       {sufijo && <span className="text-tinta-45">{sufijo}</span>}
