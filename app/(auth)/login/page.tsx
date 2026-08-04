@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,18 @@ export default function LoginPage() {
   const [correo, setCorreo] = useState("");
   const [estado, setEstado] = useState<Estado>({ tipo: "listo" });
 
+  // Si el enlace del correo no sirvió, hay que decirlo: caer callado en la
+  // pantalla de acceso se siente como un bucle sin explicación.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("error")) {
+      setEstado({
+        tipo: "error",
+        mensaje:
+          "Ese enlace ya venció o se abrió en otro navegador. Pide uno nuevo y ábrelo en este mismo dispositivo.",
+      });
+    }
+  }, []);
+
   async function enviarEnlace(e: React.FormEvent) {
     e.preventDefault();
     setEstado({ tipo: "enviando" });
@@ -19,7 +31,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email: correo,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/app`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -34,7 +46,7 @@ export default function LoginPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/app` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   }
 
